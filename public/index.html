@@ -1,410 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Outpace</title>
-    <meta name="description" content="Outpace">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Outpace</title>
+  <meta name="description" content="Outpace">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-performance-compat.js"></script>
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1810;
+      font-family: "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
 
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
+    .page {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-      body {
-        min-height: 100vh;
-        min-height: 100dvh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #1a1810;
-        font-family: "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
-        overflow: hidden;
-      }
+    .bg {
+      position: absolute;
+      inset: -4%;
+      background-image: url('/images/BM.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      will-change: transform;
+      transition: transform 0.2s ease-out;
+    }
 
-      .page {
-        position: relative;
-        width: 100%;
-        min-height: 100vh;
-        min-height: 100dvh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at center, transparent 50%, rgba(26, 24, 16, 0.25) 100%),
+        linear-gradient(to bottom, rgba(26, 24, 16, 0.1) 0%, rgba(26, 24, 16, 0.2) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
 
-      .bg {
-        position: absolute;
-        inset: -6%;
-        background-image: url('/images/BM.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        will-change: transform;
-        transition: transform 0.15s ease-out;
-      }
+    .content {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
 
-      .flicker {
-        position: absolute;
-        inset: 0;
-        background: rgba(255, 248, 200, 0.03);
-        pointer-events: none;
-        z-index: 1;
-        animation: fluoFlicker 6s infinite;
-        mix-blend-mode: soft-light;
-      }
+    .title {
+      font-size: clamp(3.5rem, 12vw, 8rem);
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      line-height: 1;
+      color: #f5f0d8;
+      text-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.9),
+        0 0 40px rgba(201, 180, 88, 0.35);
+      opacity: 0;
+      transform: translateY(24px);
+      animation: titleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    }
 
-      @keyframes fluoFlicker {
-        0%, 90%, 100% { opacity: 0.15; }
-        91% { opacity: 0.5; }
-        92% { opacity: 0.1; }
-        94% { opacity: 0.35; }
-        96% { opacity: 0.12; }
-      }
+    @keyframes titleIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-      .overlay {
-        position: absolute;
-        inset: 0;
-        background:
-          radial-gradient(ellipse at center, transparent 45%, rgba(26, 24, 16, 0.2) 100%),
-          linear-gradient(to bottom, rgba(26, 24, 16, 0.05) 0%, rgba(26, 24, 16, 0.15) 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
+    .subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: rgba(232, 217, 138, 0.7);
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+      margin: 1.8rem 0 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.4s forwards;
+    }
 
-      .scanlines {
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 0, 0, 0.12) 2px,
-          rgba(0, 0, 0, 0.12) 4px
-        );
-        pointer-events: none;
-        z-index: 3;
-        opacity: 0.55;
-        animation: scanMove 8s linear infinite;
-      }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.55s forwards;
+    }
 
-      .scanlines::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          to bottom,
-          transparent 0%,
-          rgba(255, 255, 255, 0.03) 50%,
-          transparent 100%
-        );
-        background-size: 100% 8px;
-        animation: scanBeam 4s linear infinite;
-        pointer-events: none;
-      }
+    .btn-bm {
+      display: inline-block;
+      min-width: 148px;
+      padding: 0.95rem 1.8rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
 
-      @keyframes scanMove {
-        0% { background-position: 0 0; }
-        100% { background-position: 0 4px; }
-      }
+    .btn-primary-bm {
+      background: #c9b458;
+      color: #1a1810;
+    }
+    .btn-primary-bm:hover {
+      background: #e8d98a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
 
-      @keyframes scanBeam {
-        0% { transform: translateY(-100%); }
-        100% { transform: translateY(100vh); }
-      }
+    .btn-outline-bm {
+      background: rgba(26, 24, 16, 0.6);
+      border: 1.5px solid rgba(232, 217, 138, 0.5);
+      color: #f5f0d8;
+    }
+    .btn-outline-bm:hover {
+      background: rgba(201, 180, 88, 0.18);
+      border-color: #e8d98a;
+      transform: translateY(-2px);
+    }
 
-      .content {
-        position: relative;
-        z-index: 5;
-        text-align: center;
-        padding: 2rem 1.5rem;
-      }
+    .dust {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
 
-      .title-wrap {
-        position: relative;
-        display: inline-block;
-        margin-bottom: 2.5rem;
-      }
+    .dust span {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(245, 240, 216, 0.5);
+      animation: floatDust linear infinite;
+    }
 
-      .title {
-        font-size: clamp(3.5rem, 12vw, 8rem);
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        line-height: 1;
-        color: #f5f0d8;
-        text-shadow:
-          0 2px 10px rgba(0, 0, 0, 0.9),
-          0 0 40px rgba(201, 180, 88, 0.4),
-          0 0 80px rgba(201, 180, 88, 0.2);
-        position: relative;
-        z-index: 2;
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
-        animation: titleIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards,
-                   titleGlow 4s ease-in-out 1.5s infinite;
-      }
+    @keyframes floatDust {
+      0%   { transform: translateY(100vh); opacity: 0; }
+      10%  { opacity: 0.5; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-10vh); opacity: 0; }
+    }
 
-      .title::before,
-      .title::after {
-        content: "Outpace";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        pointer-events: none;
-      }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page" id="page">
+    <div class="bg" id="bg"></div>
+    <div class="overlay"></div>
+    <div class="dust" id="dust"></div>
 
-      .title::before {
-        color: #ff5555;
-        z-index: -1;
-        animation: glitchRed 2.8s infinite;
-      }
-
-      .title::after {
-        color: #55c4ff;
-        z-index: -2;
-        animation: glitchBlue 2.8s infinite;
-      }
-
-      @keyframes titleIn {
-        to { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
-      @keyframes titleGlow {
-        0%, 100% { text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 40px rgba(201,180,88,0.4), 0 0 80px rgba(201,180,88,0.2); }
-        50% { text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 60px rgba(201,180,88,0.55), 0 0 110px rgba(201,180,88,0.3); }
-      }
-
-      @keyframes glitchRed {
-        0%, 72%, 100% { opacity: 0; transform: translate(0); clip-path: none; }
-        73% { opacity: 0.85; transform: translate(-6px, 2px); clip-path: inset(15% 0 55% 0); }
-        74% { opacity: 0.7; transform: translate(5px, -2px); clip-path: inset(50% 0 15% 0); }
-        75% { opacity: 0; transform: translate(0); }
-        82% { opacity: 0.75; transform: translate(-8px, -1px); clip-path: inset(30% 0 40% 0); }
-        83% { opacity: 0.5; transform: translate(4px, 3px); clip-path: inset(65% 0 5% 0); }
-        84% { opacity: 0; transform: translate(0); }
-      }
-
-      @keyframes glitchBlue {
-        0%, 75%, 100% { opacity: 0; transform: translate(0); clip-path: none; }
-        76% { opacity: 0.8; transform: translate(7px, -3px); clip-path: inset(35% 0 35% 0); }
-        77% { opacity: 0.55; transform: translate(-5px, 2px); clip-path: inset(5% 0 60% 0); }
-        78% { opacity: 0; transform: translate(0); }
-        86% { opacity: 0.7; transform: translate(6px, 1px); clip-path: inset(45% 0 25% 0); }
-        87% { opacity: 0.45; transform: translate(-4px, -2px); clip-path: inset(20% 0 50% 0); }
-        88% { opacity: 0; transform: translate(0); }
-      }
-
-      .subtitle {
-        font-size: 0.7rem;
-        letter-spacing: 0.45em;
-        text-transform: uppercase;
-        color: rgba(232, 217, 138, 0.7);
-        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
-        margin-bottom: 2rem;
-        opacity: 0;
-        animation: rise 0.9s ease 0.5s forwards;
-      }
-
-      .buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.9rem;
-        justify-content: center;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: rise 1s ease 0.65s forwards;
-      }
-
-      .btn-bm {
-        display: inline-block;
-        min-width: 148px;
-        padding: 0.95rem 1.8rem;
-        font-size: 0.88rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        text-decoration: none;
-        border: none;
-        position: relative;
-        overflow: hidden;
-        transition: background 0.25s, transform 0.2s, box-shadow 0.25s, border-color 0.25s, color 0.2s;
-      }
-
-      .btn-bm::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
-        transform: translateX(-120%);
-        transition: transform 0.5s ease;
-      }
-
-      .btn-bm:hover::after {
-        transform: translateX(120%);
-      }
-
-      .btn-primary-bm {
-        background: #c9b458;
-        color: #1a1810;
-      }
-      .btn-primary-bm:hover {
-        background: #e8d98a;
-        color: #1a1810;
-        transform: translateY(-3px) scale(1.03);
-        box-shadow: 0 0 24px rgba(201, 180, 88, 0.5), 0 8px 28px rgba(0,0,0,0.35);
-      }
-
-      .btn-outline-bm {
-        background: rgba(26, 24, 16, 0.55);
-        backdrop-filter: blur(8px);
-        border: 1.5px solid rgba(232, 217, 138, 0.55);
-        color: #f5f0d8;
-      }
-      .btn-outline-bm:hover {
-        background: rgba(201, 180, 88, 0.22);
-        border-color: #e8d98a;
-        color: #f5f0d8;
-        transform: translateY(-3px) scale(1.03);
-        box-shadow: 0 0 20px rgba(201, 180, 88, 0.3);
-      }
-
-      .dust {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 2;
-        overflow: hidden;
-      }
-
-      .dust span {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(245, 240, 216, 0.65);
-        box-shadow: 0 0 3px rgba(245, 240, 216, 0.35);
-        animation: floatDust linear infinite;
-      }
-
-      @keyframes floatDust {
-        0% { transform: translateY(105vh) translateX(0) scale(1); opacity: 0; }
-        8% { opacity: 0.65; }
-        50% { opacity: 0.5; }
-        92% { opacity: 0.3; }
-        100% { transform: translateY(-8vh) translateX(30px) scale(0.6); opacity: 0; }
-      }
-
-      @keyframes rise {
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      .page.hard-flicker .bg,
-      .page.hard-flicker .content {
-        animation: hardFlick 0.15s steps(2);
-      }
-
-      @keyframes hardFlick {
-        0%, 100% { opacity: 1; filter: brightness(1); }
-        40% { opacity: 0.45; filter: brightness(1.4); }
-        70% { opacity: 0.85; filter: brightness(0.8); }
-      }
-
-      #load {
-        position: fixed;
-        bottom: 0.4rem;
-        right: 0.6rem;
-        font-size: 0.65rem;
-        color: rgba(201, 180, 88, 0.3);
-        z-index: 50;
-        pointer-events: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page" id="page">
-      <div class="bg" id="bg"></div>
-      <div class="flicker"></div>
-      <div class="overlay"></div>
-      <div class="scanlines"></div>
-      <div class="dust" id="dust"></div>
-
-      <div class="content">
-        <div class="title-wrap">
-          <h1 class="title">Outpace</h1>
-        </div>
-        <p class="subtitle">yo!</p>
-        <div class="buttons">
-          <a class="btn-bm btn-primary-bm" href="https://discord.gg/ZzWwDURXhG" target="_blank" rel="noopener">Discord</a>
-          <a class="btn-bm btn-outline-bm" href="https://bm-backroomsmania.web.app/releasedate">Release</a>
-          <a class="btn-bm btn-outline-bm" href="https://bm-backroomsmania.web.app/apply">Apply for Staff</a>
-        </div>
+    <div class="content">
+      <h1 class="title">Outpace</h1>
+      <p class="subtitle">yo!</p>
+      <div class="buttons">
+        <a class="btn-bm btn-primary-bm" href="https://discord.gg/ZzWwDURXhG" target="_blank" rel="noopener">Discord</a>
+        <a class="btn-bm btn-outline-bm" href="https://bm-backroomsmania.web.app/releasedate">Release</a>
+        <a class="btn-bm btn-outline-bm" href="https://bm-backroomsmania.web.app/apply">Apply for Staff</a>
       </div>
     </div>
+  </div>
 
-    <p id="load">Firebase SDK Loading&hellip;</p>
+  <script>
+    // Throttled parallax (much lighter)
+    const bg = document.getElementById('bg');
+    let ticking = false;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
-    <script>
-      const bg = document.getElementById('bg');
-      const page = document.getElementById('page');
-
-      document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 18;
-        const y = (e.clientY / window.innerHeight - 0.5) * 14;
-        bg.style.transform = `translate(${x}px, ${y}px) scale(1.06)`;
-      });
-
-      function scheduleFlick() {
-        const delay = 3500 + Math.random() * 7000;
-        setTimeout(() => {
-          page.classList.add('hard-flicker');
-          setTimeout(() => page.classList.remove('hard-flicker'), 160);
-          scheduleFlick();
-        }, delay);
+    document.addEventListener('mousemove', (e) => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const x = (e.clientX / window.innerWidth - 0.5) * 12;
+          const y = (e.clientY / window.innerHeight - 0.5) * 9;
+          bg.style.transform = `translate(${x}px, ${y}px) scale(1.04)`;
+          ticking = false;
+        });
+        ticking = true;
       }
-      scheduleFlick();
+    });
 
-      const dust = document.getElementById('dust');
-      for (let i = 0; i < 40; i++) {
-        const s = document.createElement('span');
-        const size = 1.5 + Math.random() * 3;
-        s.style.left = Math.random() * 100 + '%';
-        s.style.width = size + 'px';
-        s.style.height = size + 'px';
-        s.style.animationDuration = (6 + Math.random() * 12) + 's';
-        s.style.animationDelay = (Math.random() * 10) + 's';
-        s.style.opacity = 0.3 + Math.random() * 0.4;
-        dust.appendChild(s);
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        const loadEl = document.querySelector('#load');
-        try {
-          const app = firebase.app();
-          const features = [
-            'auth', 'database', 'firestore', 'functions',
-            'messaging', 'storage', 'analytics', 'remoteConfig', 'performance'
-          ].filter((f) => typeof app[f] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (err) {
-          console.error(err);
-          loadEl.textContent = 'Error loading the Firebase SDK.';
-        }
-      });
-    </script>
-  </body>
+    // Fewer dust particles
+    const dust = document.getElementById('dust');
+    for (let i = 0; i < 12; i++) {
+      const s = document.createElement('span');
+      const size = 1.5 + Math.random() * 2.5;
+      s.style.left = Math.random() * 100 + '%';
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.animationDuration = (8 + Math.random() * 10) + 's';
+      s.style.animationDelay = (Math.random() * 8) + 's';
+      dust.appendChild(s);
+    }
+  </script>
+</body>
 </html>
