@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BM — Terms of Service</title>
+    <meta name="description" content="Backrooms Mania Terms of Service">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <!-- Firebase SDK -->
+    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-performance-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        min-height: 100vh;
+        background: #1a1810;
+        font-family: "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+        color: #f5f0d8;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100vh;
+        padding: 3rem 1.25rem 4rem;
+      }
+
+      .bg {
+        position: fixed;
+        inset: 0;
+        background-image: url('/images/BM.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: 0;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at center, transparent 15%, rgba(26, 24, 16, 0.65) 100%),
+          linear-gradient(to bottom, rgba(26, 24, 16, 0.55) 0%, rgba(26, 24, 16, 0.85) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .content-wrap {
+        position: relative;
+        z-index: 2;
+        max-width: 720px;
+        margin: 0 auto;
+        background: rgba(26, 24, 16, 0.72);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(201, 180, 88, 0.28);
+        padding: 2.25rem 1.75rem 2.5rem;
+      }
+
+      .content-wrap h1 {
+        font-size: clamp(1.8rem, 5vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #f5f0d8;
+        text-align: center;
+        margin-bottom: 1.25rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .warning {
+        background: rgba(201, 180, 88, 0.12);
+        border-left: 3px solid #c9b458;
+        padding: 0.9rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        color: rgba(245, 240, 216, 0.9);
+        margin-bottom: 1.5rem;
+      }
+
+      .section {
+        margin-bottom: 1.75rem;
+      }
+
+      .section h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #e8d98a;
+        margin-bottom: 0.6rem;
+      }
+
+      .section p {
+        font-size: 0.92rem;
+        line-height: 1.6;
+        color: rgba(245, 240, 216, 0.85);
+        margin-bottom: 0.6rem;
+      }
+
+      .section ul {
+        margin: 0.5rem 0 0 1.25rem;
+        padding: 0;
+      }
+
+      .section li {
+        font-size: 0.92rem;
+        line-height: 1.55;
+        color: rgba(245, 240, 216, 0.85);
+        margin-bottom: 0.55rem;
+      }
+
+      .section li strong {
+        color: #e8d98a;
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .btn-bm {
+        display: inline-block;
+        min-width: 140px;
+        padding: 0.9rem 1.75rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+      }
+
+      .btn-primary-bm {
+        background: #c9b458;
+        color: #1a1810;
+      }
+      .btn-primary-bm:hover {
+        background: #e8d98a;
+        color: #1a1810;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(201, 180, 88, 0.4);
+      }
+
+      .btn-outline-bm {
+        background: rgba(26, 24, 16, 0.45);
+        backdrop-filter: blur(6px);
+        border: 1.5px solid rgba(232, 217, 138, 0.55);
+        color: #f5f0d8;
+      }
+      .btn-outline-bm:hover {
+        background: rgba(201, 180, 88, 0.18);
+        border-color: #e8d98a;
+        color: #f5f0d8;
+        transform: translateY(-2px);
+      }
+
+      #load {
+        position: fixed;
+        bottom: 0.4rem;
+        right: 0.6rem;
+        font-size: 0.65rem;
+        color: rgba(201, 180, 88, 0.3);
+        z-index: 50;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="bg"></div>
+      <div class="overlay"></div>
+
+      <div class="content-wrap">
+        <h1>BM ToS</h1>
+
+        <div class="warning">
+          Failure to comply with our ToS, especially when applying for staff, will get your chances of acceptance to 0%.
+        </div>
+
+        <div class="section">
+          <h2>We Log Your IP</h2>
+          <p>
+            We only log your IP for moderation purposes and in no way, shape, or form does your IP get sold or leaked to the public.
+            We safely store your IP on our website servers to ensure your IP is safe.
+            If your IP was leaked to the public, you have all rights to file a lawsuit. We will handle it.
+          </p>
+        </div>
+
+        <div class="section">
+          <h2>1. Acceptable Use Policy</h2>
+          <p>
+            By accessing our website, community forums, or game servers, you agree to behave in a respectful and civil manner.
+            The following actions are strictly prohibited:
+          </p>
+          <ul>
+            <li>
+              <strong>Harassment and Hate Speech:</strong>
+              Any form of bullying, discrimination, or hate speech targeting players, community members, or staff will result in an immediate and permanent ban.
+            </li>
+            <li>
+              <strong>Cheating and Exploiting:</strong>
+              Utilizing third-party software, scripts, or bugs/glitches to gain an unfair advantage in the game is strictly forbidden.
+            </li>
+            <li>
+              <strong>Impersonation:</strong>
+              Pretending to be an official BM staff member, developer, or another player is grounds for removal from the platform.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>2. Staff Applications and Conduct</h2>
+          <p>Applying for a staff position within our community is a privilege, not a right.</p>
+          <ul>
+            <li>
+              <strong>Truthfulness:</strong>
+              All information provided in your application must be completely honest and accurate.
+              Falsifying details will lead to immediate rejection and a ban from future applications.
+            </li>
+            <li>
+              <strong>Confidentiality:</strong>
+              If accepted, any internal staff discussions, leaks, or private information shared with you must remain confidential.
+              Distributing staff-only material will result in termination of your role, a ban, and blacklisting.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>3. User-Generated Content</h2>
+          <p>
+            Any content you submit to our website or community platforms (including forum posts, fan art, level ideas, and suggestions)
+            must not violate copyright, trademark, or intellectual property laws.
+          </p>
+          <ul>
+            <li>
+              By posting content, you grant us a non-exclusive, royalty-free license to use, display, and moderate your submission within our game ecosystem.
+            </li>
+            <li>
+              We reserve the right to remove any content that we deem inappropriate, unsafe, or off-topic without prior notice.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>4. Account Security</h2>
+          <p>You are solely responsible for maintaining the confidentiality of your account credentials.</p>
+          <ul>
+            <li>
+              BM is not liable for any loss or damage resulting from your failure to protect your login information.
+            </li>
+            <li>
+              Account sharing is strongly discouraged. Any violations of these Terms performed by someone else using your account will still apply to your account directly.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>5. Account Termination and Bans</h2>
+          <p>
+            We reserve the right to suspend, terminate, or restrict your access to our website, Discord, and game servers at any time,
+            with or without cause, and without prior notice.
+          </p>
+          <ul>
+            <li>
+              If you are banned for violating these Terms, attempting to evade your ban using alt accounts, VPNs, or proxy services
+              will result in extended or permanent hardware and network bans.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>6. Disclaimer of Warranties</h2>
+          <p>
+            Our website and services are provided on an “as is” and “as available” basis.
+            BM makes no warranties, expressed or implied, regarding uptime, server stability, or the complete absence of bugs/errors.
+            We are constantly updating the game and website to provide the best experience possible, but service interruptions may occur.
+          </p>
+        </div>
+
+        <div class="section">
+          <h2>7. Changes to the Terms of Service</h2>
+          <p>
+            We reserve the right to update or modify these Terms at any time.
+            Continued use of our website or services following any changes constitutes your acceptance of the new Terms of Service.
+          </p>
+        </div>
+
+        <div class="btn-row">
+          <a class="btn-bm btn-outline-bm" href="/">Home</a>
+          <a class="btn-bm btn-primary-bm" href="/form">Back to Application</a>
+        </div>
+      </div>
+    </div>
+
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const loadEl = document.querySelector('#load');
+        try {
+          const app = firebase.app();
+          const features = [
+            'auth', 'database', 'firestore', 'functions',
+            'messaging', 'storage', 'analytics', 'remoteConfig', 'performance'
+          ].filter((f) => typeof app[f] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (err) {
+          console.error(err);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
+</html>
