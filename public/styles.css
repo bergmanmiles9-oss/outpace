@@ -1,0 +1,76 @@
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label {
+  display: block;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #d4b47a;
+  margin-bottom: 0.45rem;
+  line-height: 1.45;
+}
+
+.field label a {
+  color: #c4a06a;
+  text-decoration: underline;
+}
+.field label a:hover {
+  color: #e8d5b5;
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="email"],
+.field select,
+.field textarea {
+  width: 100%;
+  background: rgba(20, 14, 10, 0.75);
+  border: 1px solid rgba(196, 160, 106, 0.35);
+  color: #e8d5b5;
+  padding: 0.7rem 0.9rem;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: #c4a06a;
+}
+.field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.field select {
+  cursor: pointer;
+}
+.field select option {
+  background: #2a2118;
+  color: #e8d5b5;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-weight: 500;
+  color: #e8d5b5;
+  cursor: pointer;
+  margin: 0;
+}
+.radio-group input[type="radio"] {
+  accent-color: #c4a06a;
+  width: 1.05rem;
+  height: 1.05rem;
+}

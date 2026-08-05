@@ -3,190 +3,32 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BM — Terms of Service</title>
-    <meta name="description" content="Backrooms Mania Terms of Service">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Outpace — Terms of Service</title>
+    <meta name="description" content="Outpace Terms of Service">
+    <link rel="stylesheet" href="/styles.css">
 
     <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-database-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-storage-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-performance-compat.js"></script>
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-
-      body {
-        min-height: 100vh;
-        background: #1a1810;
-        font-family: "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
-        color: #f5f0d8;
-      }
-
-      .page {
-        position: relative;
-        min-height: 100vh;
-        padding: 3rem 1.25rem 4rem;
-      }
-
-      .bg {
-        position: fixed;
-        inset: 0;
-        background-image: url('/images/BM.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: 0;
-      }
-
-      .overlay {
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(ellipse at center, transparent 15%, rgba(26, 24, 16, 0.65) 100%),
-          linear-gradient(to bottom, rgba(26, 24, 16, 0.55) 0%, rgba(26, 24, 16, 0.85) 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      .content-wrap {
-        position: relative;
-        z-index: 2;
-        max-width: 720px;
-        margin: 0 auto;
-        background: rgba(26, 24, 16, 0.72);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(201, 180, 88, 0.28);
-        padding: 2.25rem 1.75rem 2.5rem;
-      }
-
-      .content-wrap h1 {
-        font-size: clamp(1.8rem, 5vw, 2.4rem);
-        font-weight: 800;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #f5f0d8;
-        text-align: center;
-        margin-bottom: 1.25rem;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-      }
-
-      .warning {
-        background: rgba(201, 180, 88, 0.12);
-        border-left: 3px solid #c9b458;
-        padding: 0.9rem 1rem;
-        font-size: 0.9rem;
-        line-height: 1.55;
-        color: rgba(245, 240, 216, 0.9);
-        margin-bottom: 1.5rem;
-      }
-
-      .section {
-        margin-bottom: 1.75rem;
-      }
-
-      .section h2 {
-        font-size: 1.05rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        color: #e8d98a;
-        margin-bottom: 0.6rem;
-      }
-
-      .section p {
-        font-size: 0.92rem;
-        line-height: 1.6;
-        color: rgba(245, 240, 216, 0.85);
-        margin-bottom: 0.6rem;
-      }
-
-      .section ul {
-        margin: 0.5rem 0 0 1.25rem;
-        padding: 0;
-      }
-
-      .section li {
-        font-size: 0.92rem;
-        line-height: 1.55;
-        color: rgba(245, 240, 216, 0.85);
-        margin-bottom: 0.55rem;
-      }
-
-      .section li strong {
-        color: #e8d98a;
-      }
-
-      .btn-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        justify-content: center;
-        margin-top: 2rem;
-      }
-
-      .btn-bm {
-        display: inline-block;
-        min-width: 140px;
-        padding: 0.9rem 1.75rem;
-        font-size: 0.9rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s, transform 0.15s, box-shadow 0.2s, border-color 0.2s;
-      }
-
-      .btn-primary-bm {
-        background: #c9b458;
-        color: #1a1810;
-      }
-      .btn-primary-bm:hover {
-        background: #e8d98a;
-        color: #1a1810;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 28px rgba(201, 180, 88, 0.4);
-      }
-
-      .btn-outline-bm {
-        background: rgba(26, 24, 16, 0.45);
-        backdrop-filter: blur(6px);
-        border: 1.5px solid rgba(232, 217, 138, 0.55);
-        color: #f5f0d8;
-      }
-      .btn-outline-bm:hover {
-        background: rgba(201, 180, 88, 0.18);
-        border-color: #e8d98a;
-        color: #f5f0d8;
-        transform: translateY(-2px);
-      }
-
-      #load {
-        position: fixed;
-        bottom: 0.4rem;
-        right: 0.6rem;
-        font-size: 0.65rem;
-        color: rgba(201, 180, 88, 0.3);
-        z-index: 50;
-        pointer-events: none;
-      }
-    </style>
   </head>
   <body>
-    <div class="page">
-      <div class="bg"></div>
-      <div class="overlay"></div>
+    <div class="bg"></div>
+    <div class="rays"></div>
+    <div class="particles" id="particles"></div>
 
-      <div class="content-wrap">
-        <h1>BM ToS</h1>
+    <nav class="nav">
+      <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
+      <div class="nav-links">
+        <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/">Home</a>
+        <a class="nav-btn nav-btn-primary" href="https://www.out-pace.org/form">Application</a>
+      </div>
+    </nav>
+
+    <div class="page-content">
+      <div class="panel">
+        <h1>Terms of Service</h1>
 
         <div class="warning">
           Failure to comply with our ToS, especially when applying for staff, will get your chances of acceptance to 0%.
@@ -218,7 +60,7 @@
             </li>
             <li>
               <strong>Impersonation:</strong>
-              Pretending to be an official BM staff member, developer, or another player is grounds for removal from the platform.
+              Pretending to be an official Outpace staff member, developer, or another player is grounds for removal from the platform.
             </li>
           </ul>
         </div>
@@ -261,7 +103,7 @@
           <p>You are solely responsible for maintaining the confidentiality of your account credentials.</p>
           <ul>
             <li>
-              BM is not liable for any loss or damage resulting from your failure to protect your login information.
+              Outpace is not liable for any loss or damage resulting from your failure to protect your login information.
             </li>
             <li>
               Account sharing is strongly discouraged. Any violations of these Terms performed by someone else using your account will still apply to your account directly.
@@ -287,7 +129,7 @@
           <h2>6. Disclaimer of Warranties</h2>
           <p>
             Our website and services are provided on an “as is” and “as available” basis.
-            BM makes no warranties, expressed or implied, regarding uptime, server stability, or the complete absence of bugs/errors.
+            Outpace makes no warranties, expressed or implied, regarding uptime, server stability, or the complete absence of bugs/errors.
             We are constantly updating the game and website to provide the best experience possible, but service interruptions may occur.
           </p>
         </div>
@@ -301,29 +143,42 @@
         </div>
 
         <div class="btn-row">
-          <a class="btn-bm btn-outline-bm" href="https://www.out-pace.org/">Home</a>
-          <a class="btn-bm btn-primary-bm" href="https://www.out-pace.org/form">Back to Application</a>
+          <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/">Home</a>
+          <a class="nav-btn nav-btn-primary" href="https://www.out-pace.org/form">Back to Application</a>
         </div>
       </div>
     </div>
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
     <script>
+      (function () {
+        var el = document.getElementById('particles');
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < 18; i++) {
+          var s = document.createElement('span');
+          var size = 1.5 + Math.random() * 2.5;
+          s.style.cssText =
+            'left:' + (Math.random() * 100) + '%;' +
+            'width:' + size + 'px;height:' + size + 'px;' +
+            'animation-duration:' + (10 + Math.random() * 14) + 's;' +
+            'animation-delay:' + (Math.random() * 12) + 's;';
+          frag.appendChild(s);
+        }
+        el.appendChild(frag);
+      })();
+
       document.addEventListener('DOMContentLoaded', function () {
-        const loadEl = document.querySelector('#load');
+        var loadEl = document.getElementById('load');
         try {
-          const app = firebase.app();
-          const features = [
-            'auth', 'database', 'firestore', 'functions',
-            'messaging', 'storage', 'analytics', 'remoteConfig', 'performance'
-          ].filter((f) => typeof app[f] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+          var app = firebase.app();
+          var features = ['auth', 'firestore', 'analytics'].filter(function (f) {
+            return typeof app[f] === 'function';
+          });
+          loadEl.textContent = 'Firebase SDK loaded with ' + features.join(', ');
         } catch (err) {
           console.error(err);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          loadEl.textContent = 'Error loading the Firebase SDK.';
         }
       });
     </script>

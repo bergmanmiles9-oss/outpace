@@ -3,235 +3,31 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BM — Application</title>
-    <meta name="description" content="Backrooms Mania Staff Application">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Outpace — Application</title>
+    <meta name="description" content="Outpace Staff Application">
+    <link rel="stylesheet" href="/styles.css">
 
     <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-database-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-storage-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-performance-compat.js"></script>
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-
-      body {
-        min-height: 100vh;
-        background: #1a1810;
-        font-family: "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
-        color: #f5f0d8;
-      }
-
-      .page {
-        position: relative;
-        min-height: 100vh;
-        padding: 3rem 1.25rem 4rem;
-      }
-
-      .bg {
-        position: fixed;
-        inset: 0;
-        background-image: url('/images/BM.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: 0;
-      }
-
-      .overlay {
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(ellipse at center, transparent 15%, rgba(26, 24, 16, 0.65) 100%),
-          linear-gradient(to bottom, rgba(26, 24, 16, 0.55) 0%, rgba(26, 24, 16, 0.85) 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      .form-wrap {
-        position: relative;
-        z-index: 2;
-        max-width: 640px;
-        margin: 0 auto;
-        background: rgba(26, 24, 16, 0.72);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(201, 180, 88, 0.28);
-        padding: 2.25rem 1.75rem 2.5rem;
-      }
-
-      .form-wrap h1 {
-        font-size: clamp(1.8rem, 5vw, 2.4rem);
-        font-weight: 800;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #f5f0d8;
-        text-align: center;
-        margin-bottom: 1.25rem;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-      }
-
-      .warning {
-        background: rgba(201, 180, 88, 0.12);
-        border-left: 3px solid #c9b458;
-        padding: 0.9rem 1rem;
-        font-size: 0.9rem;
-        line-height: 1.55;
-        color: rgba(245, 240, 216, 0.9);
-        margin-bottom: 2rem;
-      }
-
-      .field {
-        margin-bottom: 1.5rem;
-      }
-
-      .field label {
-        display: block;
-        font-size: 0.88rem;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        color: #e8d98a;
-        margin-bottom: 0.45rem;
-        line-height: 1.45;
-      }
-
-      .field label a {
-        color: #c9b458;
-        text-decoration: underline;
-      }
-      .field label a:hover {
-        color: #e8d98a;
-      }
-
-      .field .hint {
-        font-size: 0.8rem;
-        font-weight: 400;
-        color: rgba(245, 240, 216, 0.55);
-        margin-top: 0.2rem;
-      }
-
-      .field input[type="text"],
-      .field input[type="number"],
-      .field input[type="email"],
-      .field select,
-      .field textarea {
-        width: 100%;
-        background: rgba(14, 12, 8, 0.75);
-        border: 1px solid rgba(201, 180, 88, 0.35);
-        color: #f5f0d8;
-        padding: 0.7rem 0.9rem;
-        font-size: 0.95rem;
-        outline: none;
-        transition: border-color 0.2s;
-      }
-      .field input:focus,
-      .field select:focus,
-      .field textarea:focus {
-        border-color: #c9b458;
-      }
-      .field textarea {
-        min-height: 100px;
-        resize: vertical;
-      }
-      .field select {
-        cursor: pointer;
-      }
-      .field select option {
-        background: #1a1810;
-        color: #f5f0d8;
-      }
-
-      .radio-group {
-        display: flex;
-        gap: 1.25rem;
-        flex-wrap: wrap;
-        margin-top: 0.35rem;
-      }
-      .radio-group label {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-weight: 500;
-        color: #f5f0d8;
-        cursor: pointer;
-        margin: 0;
-      }
-      .radio-group input[type="radio"] {
-        accent-color: #c9b458;
-        width: 1.05rem;
-        height: 1.05rem;
-      }
-
-      .btn-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        justify-content: center;
-        margin-top: 2rem;
-      }
-
-      .btn-bm {
-        display: inline-block;
-        min-width: 140px;
-        padding: 0.9rem 1.75rem;
-        font-size: 0.9rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s, transform 0.15s, box-shadow 0.2s, border-color 0.2s;
-      }
-
-      .btn-primary-bm {
-        background: #c9b458;
-        color: #1a1810;
-      }
-      .btn-primary-bm:hover {
-        background: #e8d98a;
-        color: #1a1810;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 28px rgba(201, 180, 88, 0.4);
-      }
-
-      .btn-outline-bm {
-        background: rgba(26, 24, 16, 0.45);
-        backdrop-filter: blur(6px);
-        border: 1.5px solid rgba(232, 217, 138, 0.55);
-        color: #f5f0d8;
-      }
-      .btn-outline-bm:hover {
-        background: rgba(201, 180, 88, 0.18);
-        border-color: #e8d98a;
-        color: #f5f0d8;
-        transform: translateY(-2px);
-      }
-
-      #load {
-        position: fixed;
-        bottom: 0.4rem;
-        right: 0.6rem;
-        font-size: 0.65rem;
-        color: rgba(201, 180, 88, 0.3);
-        z-index: 50;
-        pointer-events: none;
-      }
-    </style>
   </head>
   <body>
-    <div class="page">
-      <div class="bg"></div>
-      <div class="overlay"></div>
+    <div class="bg"></div>
+    <div class="rays"></div>
+    <div class="particles" id="particles"></div>
 
-      <div class="form-wrap">
+    <nav class="nav">
+      <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
+      <div class="nav-links">
+        <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/">Home</a>
+        <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/tos">ToS</a>
+      </div>
+    </nav>
+
+    <div class="page-content">
+      <div class="panel">
         <h1>Application</h1>
 
         <div class="warning">
@@ -242,7 +38,7 @@
 
           <div class="field">
             <label>
-              Have you read our <a href="/tos" target="_blank">Terms and Conditions</a>?
+              Have you read our <a href="https://www.out-pace.org/tos" target="_blank">Terms and Conditions</a>?
             </label>
             <div class="radio-group">
               <label><input type="radio" name="tos" value="yes" required> Yes</label>
@@ -319,7 +115,7 @@
           </div>
 
           <div class="field">
-            <label for="why">Why do you want to join the BM staff team?</label>
+            <label for="why">Why do you want to join the Outpace staff team?</label>
             <textarea id="why" name="why" placeholder="Be honest and specific..." required></textarea>
           </div>
 
@@ -370,7 +166,7 @@
           </div>
 
           <div class="field">
-            <label for="referral">How did you find out about BM / this staff application?</label>
+            <label for="referral">How did you find out about Outpace / this staff application?</label>
             <input type="text" id="referral" name="referral" placeholder="Discord, friend, Roblox, etc." required>
           </div>
 
@@ -390,8 +186,8 @@
           </div>
 
           <div class="btn-row">
-            <a class="btn-bm btn-outline-bm" href="/">Back</a>
-            <button type="submit" class="btn-bm btn-primary-bm" href="https://www.out-pace.org/submitted">Submit Application</button>
+            <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/">Back</a>
+            <button type="submit" class="nav-btn nav-btn-primary">Submit Application</button>
           </div>
         </form>
       </div>
@@ -399,37 +195,51 @@
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
     <script>
+      (function () {
+        var el = document.getElementById('particles');
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < 18; i++) {
+          var s = document.createElement('span');
+          var size = 1.5 + Math.random() * 2.5;
+          s.style.cssText =
+            'left:' + (Math.random() * 100) + '%;' +
+            'width:' + size + 'px;height:' + size + 'px;' +
+            'animation-duration:' + (10 + Math.random() * 14) + 's;' +
+            'animation-delay:' + (Math.random() * 12) + 's;';
+          frag.appendChild(s);
+        }
+        el.appendChild(frag);
+      })();
+
       function handleSubmit(e) {
         e.preventDefault();
-        const form = e.target;
-        const data = Object.fromEntries(new FormData(form).entries());
+        var form = e.target;
+        var data = Object.fromEntries(new FormData(form).entries());
 
         // firebase.firestore().collection('applications').add({
         //   ...data,
         //   submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-        // }).then(() => { ... });
+        // }).then(function () {
+        //   window.location.href = 'https://www.out-pace.org/submitted';
+        // });
 
         console.log('Application data:', data);
-        alert('Application submitted. We’ll review it and contact you on Discord.');
-        form.reset();
+        window.location.href = 'https://www.out-pace.org/submitted';
         return false;
       }
 
       document.addEventListener('DOMContentLoaded', function () {
-        const loadEl = document.querySelector('#load');
+        var loadEl = document.getElementById('load');
         try {
-          const app = firebase.app();
-          const features = [
-            'auth', 'database', 'firestore', 'functions',
-            'messaging', 'storage', 'analytics', 'remoteConfig', 'performance'
-          ].filter((f) => typeof app[f] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+          var app = firebase.app();
+          var features = ['auth', 'firestore', 'analytics'].filter(function (f) {
+            return typeof app[f] === 'function';
+          });
+          loadEl.textContent = 'Firebase SDK loaded with ' + features.join(', ');
         } catch (err) {
           console.error(err);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          loadEl.textContent = 'Error loading the Firebase SDK.';
         }
       });
     </script>
