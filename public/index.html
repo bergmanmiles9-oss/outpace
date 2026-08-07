@@ -10,7 +10,12 @@
   <body>
     <div class="bg"></div>
     <div class="rays"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
     <div class="particles" id="particles"></div>
+    <div class="vignette"></div>
+    <div class="noise"></div>
 
     <nav class="nav">
       <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
@@ -37,13 +42,13 @@
       (function () {
         var el = document.getElementById('particles');
         var frag = document.createDocumentFragment();
-        for (var i = 0; i < 18; i++) {
+        for (var i = 0; i < 28; i++) {
           var s = document.createElement('span');
-          var size = 1.5 + Math.random() * 2.5;
+          var size = 1.5 + Math.random() * 3;
           s.style.cssText =
             'left:' + (Math.random() * 100) + '%;' +
             'width:' + size + 'px;height:' + size + 'px;' +
-            'animation-duration:' + (10 + Math.random() * 14) + 's;' +
+            'animation-duration:' + (9 + Math.random() * 16) + 's;' +
             'animation-delay:' + (Math.random() * 12) + 's;';
           frag.appendChild(s);
         }
