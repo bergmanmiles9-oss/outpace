@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Outpace — Admin</title>
+    <meta name="description" content="Outpace Admin Dashboard">
+    <link rel="stylesheet" href="/styles.css">
+
+    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  </head>
+  <body>
+    <div class="bg"></div>
+    <div class="rays"></div>
+    <div class="particles" id="particles"></div>
+
+    <nav class="nav">
+      <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
+      <div class="nav-links">
+        <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/">Home</a>
+      </div>
+    </nav>
+
+    <main class="main">
+      <div>
+        <h1 class="hero-title">Admin Dashboard</h1>
+        <p class="hero-sub">Staff control panel</p>
+        <div class="landing-buttons" style="margin-top: 2.25rem;">
+          <a class="nav-btn nav-btn-primary" href="https://www.out-pace.org/admin/logs">Logs</a>
+          <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/admin/bans">Bans</a>
+          <a class="nav-btn nav-btn-ghost" href="https://www.out-pace.org/admin/moderation">Moderation</a>
+        </div>
+      </div>
+    </main>
+
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <script>
+      (function () {
+        var el = document.getElementById('particles');
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < 18; i++) {
+          var s = document.createElement('span');
+          var size = 1.5 + Math.random() * 2.5;
+          s.style.cssText =
+            'left:' + (Math.random() * 100) + '%;' +
+            'width:' + size + 'px;height:' + size + 'px;' +
+            'animation-duration:' + (10 + Math.random() * 14) + 's;' +
+            'animation-delay:' + (Math.random() * 12) + 's;';
+          frag.appendChild(s);
+        }
+        el.appendChild(frag);
+      })();
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var loadEl = document.getElementById('load');
+        try {
+          var app = firebase.app();
+          var features = ['auth', 'firestore', 'analytics'].filter(function (f) {
+            return typeof app[f] === 'function';
+          });
+          loadEl.textContent = 'Firebase SDK loaded with ' + features.join(', ');
+        } catch (err) {
+          console.error(err);
+          loadEl.textContent = 'Error loading the Firebase SDK.';
+        }
+      });
+    </script>
+  </body>
+</html>
