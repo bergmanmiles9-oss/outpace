@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Outpace — Logs</title>
+    <meta name="description" content="Outpace Admin Logs">
+    <link rel="stylesheet" href="/styles.css">
+
+    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  </head>
+  <body>
+    <div class="bg"></div>
+    <div class="rays"></div>
+    <div class="particles" id="particles"></div>
+
+    <nav class="nav">
+      <a class="nav-brand" href="https://www.out-pace.org/admin">Logs</a>
+    </nav>
+
+    <div class="console-wrap">
+      <div class="console-filters">
+        <button type="button" class="filter-btn active" data-filter="all">All</button>
+        <button type="button" class="filter-btn" data-filter="low">[Low Priority]</button>
+        <button type="button" class="filter-btn" data-filter="high">[High Priority]</button>
+      </div>
+
+      <p class="console-empty" id="emptyMsg">There are no logs here. Check bans or moderation.</p>
+
+      <div class="console" id="console" aria-live="polite"></div>
+    </div>
+
+    <script>
+      (function () {
+        var el = document.getElementById('particles');
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < 14; i++) {
+          var s = document.createElement('span');
+          var size = 1.5 + Math.random() * 2.5;
+          s.style.cssText =
+            'left:' + (Math.random() * 100) + '%;' +
+            'width:' + size + 'px;height:' + size + 'px;' +
+            'animation-duration:' + (10 + Math.random() * 14) + 's;' +
+            'animation-delay:' + (Math.random() * 12) + 's;';
+          frag.appendChild(s);
+        }
+        el.appendChild(frag);
+      })();
+
+      var logs = [];
+      // Example entries (remove or replace with Firestore data):
+      // logs = [
+      //   { priority: 'low', time: '12:01:03', message: 'Player Steve joined the game' },
+      //   { priority: 'high', time: '12:02:11', message: 'Unauthorized access attempt from 192.168.1.4' }
+      // ];
+
+      var consoleEl = document.getElementById('console');
+      var emptyMsg = document.getElementById('emptyMsg');
+      var currentFilter = 'all';
+
+      function renderLogs() {
+        consoleEl.innerHTML = '';
+        var visible = 0;
+
+        logs.forEach(function (log) {
+          if (currentFilter !== 'all' && log.priority !== currentFilter) return;
+          visible++;
+
+          var line = document.createElement('p');
+          line.className = 'console-line';
+          line.dataset.priority = log.priority;
+
+          var tagClass = log.priority === 'high' ? 'tag-high' : 'tag-low';
+          var tagText = log.priority === 'high' ? '[High Priority]' : '[Low Priority]';
+
+          line.innerHTML =
+            '<span class="ts">[' + log.time + ']</span> ' +
+            '<span class="' + tagClass + '">' + tagText + '</span> ' +
+            '<span class="msg">' + log.message + '</span>';
+
+          consoleEl.appendChild(line);
+        });
+
+        emptyMsg.style.display = visible === 0 ? 'block' : 'none';
+      }
+
+      document.querySelectorAll('.filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.filter-btn').forEach(function (b) {
+            b.classList.remove('active');
+          });
+          btn.classList.add('active');
+          currentFilter = btn.getAttribute('data-filter');
+          renderLogs();
+        });
+      });
+
+      renderLogs();
+
+      // Hook for live updates later:
+      // function addLog(priority, message) {
+      //   var now = new Date();
+      //   var t = [now.getHours(), now.getMinutes(), now.getSeconds()]
+      //     .map(function (n) { return String(n).padStart(2, '0'); }).join(':');
+      //   logs.push({ priority: priority, time: t, message: message });
+      //   renderLogs();
+      // }
+    </script>
+  </body>
+</html>
