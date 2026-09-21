@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Outpace Schedule</title>
+<title>Outpace — Schedule</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -213,23 +213,13 @@
   <main>
     <div class="schedule-card">
       <div class="schedule">
-        <div class="sidebar-col">
+        <div class="sidebar-col" id="sidebarCol">
           <div class="sidebar-header"></div>
-          <div class="sidebar-row">Cashier Dev</div>
-          <div class="sidebar-row">Vulzure</div>
-          <div class="sidebar-row">Jxxmolo</div>
-          <div class="sidebar-row">Motorzway</div>
         </div>
 
         <div class="timeline-col">
           <div class="timeline-inner" id="timelineInner">
             <div class="hour-header" id="hourHeader"></div>
-            <div class="track" id="row1">
-              <div class="shift shift-yellow" style="left:840px; width:210px;">Coding</div>
-            </div>
-            <div class="track" id="row2"></div>
-            <div class="track" id="row3"></div>
-            <div class="track" id="row4"></div>
           </div>
         </div>
       </div>
@@ -237,6 +227,10 @@
   </main>
 
   <script>
+    var API_URL = 'https://schedule-outpace.bergmanmiles9.workers.dev/schedule';
+    var HOUR_WIDTH = 70;
+    var FALLBACK_PEOPLE = ['Cashier Dev', 'Vulzure', 'Jxxmolo', 'Motorzway'];
+
     var hourHeader = document.getElementById('hourHeader');
     for (var h = 0; h < 24; h++) {
       var label = h === 0 ? '12 AM' : h < 12 ? h + ' AM' : h === 12 ? '12 PM' : (h - 12) + ' PM';
@@ -246,7 +240,51 @@
       hourHeader.appendChild(cell);
     }
 
-    var HOUR_WIDTH = 70;
+    function timeToX(hhmm) {
+      var parts = hhmm.split(':').map(Number);
+      return ((parts[0] * 60 + parts[1]) / 60) * HOUR_WIDTH;
+    }
+
+    function renderSchedule(entries) {
+      document.querySelectorAll('.sidebar-row').forEach(function (el) { el.remove(); });
+      document.querySelectorAll('.track').forEach(function (el) { el.remove(); });
+
+      var people = [...new Set(entries.map(function (e) { return e.person; }))];
+      var rows = people.length ? people : FALLBACK_PEOPLE;
+      var sidebarCol = document.getElementById('sidebarCol');
+      var timelineInner = document.getElementById('timelineInner');
+
+      rows.forEach(function (person) {
+        var rowLabel = document.createElement('div');
+        rowLabel.className = 'sidebar-row';
+        rowLabel.textContent = person;
+        sidebarCol.appendChild(rowLabel);
+
+        var track = document.createElement('div');
+        track.className = 'track';
+        entries.filter(function (e) { return e.person === person; }).forEach(function (e) {
+          var block = document.createElement('div');
+          block.className = 'shift shift-' + (e.color || 'yellow');
+          block.style.left = timeToX(e.start) + 'px';
+          block.style.width = (timeToX(e.end) - timeToX(e.start)) + 'px';
+          block.textContent = e.label;
+          track.appendChild(block);
+        });
+        timelineInner.appendChild(track);
+      });
+    }
+
+    async function loadSchedule() {
+      try {
+        var today = new Date().toISOString().slice(0, 10);
+        var res = await fetch(API_URL + '?date=' + today);
+        var entries = await res.json();
+        renderSchedule(entries);
+      } catch (err) {
+        console.error('Could not load schedule', err);
+        renderSchedule([]);
+      }
+    }
 
     function updateClock() {
       var now = new Date();
@@ -271,7 +309,9 @@
       document.getElementById('timelineInner').appendChild(line);
     }
 
+    loadSchedule();
     updateClock();
+    setInterval(loadSchedule, 60000);
     setInterval(updateClock, 30000);
   </script>
 </body>
