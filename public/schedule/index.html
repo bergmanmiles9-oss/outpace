@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outpace — Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090b;
+    --panel: #0e0f12;
+    --line: rgba(255, 255, 255, 0.08);
+    --text: #ece9e4;
+    --text-dim: #94979d;
+    --accent: #c9553c;
+    --yellow: #e8b84b;
+    --yellow-ink: #241a05;
+    --red: #c9553c;
+    --red-ink: #180a06;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  body { min-height: 100vh; position: relative; }
+
+  .corridor {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image: repeating-linear-gradient(
+      90deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 130px
+    );
+    mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, black 15%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, black 15%, transparent 85%);
+    opacity: 0.6;
+  }
+
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse 90% 60% at 50% 0%, transparent 60%, rgba(0,0,0,0.55) 100%);
+  }
+
+  header.topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 26px clamp(20px, 4vw, 48px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  #localTime {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  main {
+    position: relative;
+    z-index: 2;
+    padding: 32px clamp(20px, 4vw, 48px) 60px;
+  }
+
+  .schedule-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .schedule {
+    display: flex;
+  }
+
+  .sidebar-col {
+    flex: 0 0 170px;
+    border-right: 1px solid var(--line);
+  }
+
+  .sidebar-header {
+    height: 42px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar-row {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar-row:last-child { border-bottom: none; }
+
+  .timeline-col {
+    flex: 1;
+    overflow-x: auto;
+  }
+
+  .timeline-inner {
+    min-width: 1680px;
+    position: relative;
+  }
+
+  .hour-header {
+    display: flex;
+    height: 42px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hour-cell {
+    flex: 0 0 70px;
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    border-left: 1px solid var(--line);
+  }
+  .hour-cell:first-child { border-left: none; }
+
+  .track {
+    position: relative;
+    height: 64px;
+    border-bottom: 1px solid var(--line);
+    background-image: repeating-linear-gradient(
+      to right, var(--line) 0, var(--line) 1px, transparent 1px, transparent 70px
+    );
+  }
+
+  .track:last-child { border-bottom: none; }
+
+  .shift {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    border-radius: 6px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .shift-yellow { background: var(--yellow); color: var(--yellow-ink); }
+  .shift-red { background: var(--red); color: var(--red-ink); }
+
+  .now-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .now-line::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    .sidebar-col { flex-basis: 120px; }
+  }
+</style>
+</head>
+<body>
+  <div class="corridor" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">Schedule</div>
+    <div id="localTime">--:-- --, ---</div>
+  </header>
+
+  <main>
+    <div class="schedule-card">
+      <div class="schedule">
+        <div class="sidebar-col">
+          <div class="sidebar-header"></div>
+          <div class="sidebar-row">Cashier Dev</div>
+          <div class="sidebar-row">Vulzure</div>
+          <div class="sidebar-row">Jxxmolo</div>
+          <div class="sidebar-row">Motorzway</div>
+        </div>
+
+        <div class="timeline-col">
+          <div class="timeline-inner" id="timelineInner">
+            <div class="hour-header" id="hourHeader"></div>
+            <div class="track" id="row1">
+              <div class="shift shift-yellow" style="left:840px; width:210px;">Coding</div>
+            </div>
+            <div class="track" id="row2"></div>
+            <div class="track" id="row3"></div>
+            <div class="track" id="row4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    var hourHeader = document.getElementById('hourHeader');
+    for (var h = 0; h < 24; h++) {
+      var label = h === 0 ? '12 AM' : h < 12 ? h + ' AM' : h === 12 ? '12 PM' : (h - 12) + ' PM';
+      var cell = document.createElement('div');
+      cell.className = 'hour-cell';
+      cell.textContent = label;
+      hourHeader.appendChild(cell);
+    }
+
+    var HOUR_WIDTH = 70;
+
+    function updateClock() {
+      var now = new Date();
+      var h = now.getHours();
+      var m = now.getMinutes();
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12 || 12;
+      var mStr = String(m).padStart(2, '0');
+      var day = now.toLocaleDateString(undefined, { weekday: 'long' });
+      document.getElementById('localTime').textContent = h12 + ':' + mStr + ' ' + ampm + ', ' + day;
+
+      var minutesIntoDay = h * 60 + m;
+      var xPos = (minutesIntoDay / 60) * HOUR_WIDTH;
+
+      var existing = document.getElementById('nowLine');
+      if (existing) existing.remove();
+
+      var line = document.createElement('div');
+      line.className = 'now-line';
+      line.id = 'nowLine';
+      line.style.left = xPos + 'px';
+      document.getElementById('timelineInner').appendChild(line);
+    }
+
+    updateClock();
+    setInterval(updateClock, 30000);
+  </script>
+</body>
+</html>
