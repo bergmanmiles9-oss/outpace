@@ -340,6 +340,13 @@
             <input type="text" id="discord" name="discord" placeholder="username or username#0000" required>
           </div>
 
+                    <div class="field">
+            <label for="discordId">
+              What is your Discord User ID? Enable Developer Mode in Discord Settings → Advanced, then right-click your own profile picture and choose "Copy User ID."
+            </label>
+            <input type="text" id="discordId" name="discordId" placeholder="e.g. 1534332448790282372" pattern="[0-9]{15,22}" required>
+          </div>
+
           <div class="field">
             <label for="roblox">
               What is your Roblox username? Remember to use your <strong>USERNAME</strong> and not your <strong>DISPLAY NAME</strong>.
@@ -485,20 +492,29 @@
     <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
-      function handleSubmit(e) {
+            async function handleSubmit(e) {
         e.preventDefault();
         var form = e.target;
         var data = Object.fromEntries(new FormData(form).entries());
 
-        // firebase.firestore().collection('applications').add({
-        //   ...data,
-        //   submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-        // }).then(function () {
-        //   window.location.href = 'https://www.out-pace.org/submitted';
-        // });
+        try {
+          var res = await fetch('https://schedule-outpace.bergmanmiles9.workers.dev/applications', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
 
-        console.log('Application data:', data);
-        window.location.href = 'https://www.out-pace.org/submitted';
+          if (!res.ok) {
+            var err = await res.json();
+            alert('Could not submit application: ' + (err.error || 'unknown error'));
+            return false;
+          }
+
+          window.location.href = 'https://www.out-pace.org/submitted';
+        } catch (err) {
+          console.error(err);
+          alert('Could not reach the application server. Please try again.');
+        }
         return false;
       }
 
