@@ -7,6 +7,26 @@
     <meta name="description" content="Outpace Admin Logs">
     <link rel="stylesheet" href="/styles.css">
 
+    <style>
+      /* Command box styles (kept here so it works even if styles.css has no rule for it) */
+      .console-cmd { margin: 0 0 14px; }
+      .console-cmd input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        font: inherit;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: inherit;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        outline: none;
+      }
+      .console-cmd input:focus-visible { border-color: rgba(255, 255, 255, 0.6); }
+      .console-cmd input:disabled { opacity: 0.5; cursor: not-allowed; }
+      .console-cmd-status { margin: 6px 0 0; font-size: 0.85em; opacity: 0.7; min-height: 1.2em; }
+    </style>
+
     <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
@@ -27,6 +47,12 @@
         <button type="button" class="filter-btn" data-filter="low">[Low Priority]</button>
         <button type="button" class="filter-btn" data-filter="high">[High Priority]</button>
       </div>
+
+      <!-- Command box: sends commands to Roblox through Firestore -->
+      <form id="cmdForm" class="console-cmd" autocomplete="off">
+        <input id="cmdInput" type="text" placeholder='&lt;studcons&gt; print("Testing")' disabled>
+        <p class="console-cmd-status" id="cmdStatus">Checking sign-in…</p>
+      </form>
 
       <p class="console-empty" id="emptyMsg">There are no logs here. Check bans or moderation.</p>
 
@@ -73,13 +99,26 @@
           line.className = 'console-line';
           line.dataset.priority = log.priority;
 
-          var tagClass = log.priority === 'high' ? 'tag-high' : 'tag-low';
-          var tagText = log.priority === 'high' ? '[High Priority]' : '[Low Priority]';
+          var isHigh = log.priority === 'high';
 
-          line.innerHTML =
-            '<span class="ts">[' + log.time + ']</span> ' +
-            '<span class="' + tagClass + '">' + tagText + '</span> ' +
-            '<span class="msg">' + log.message + '</span>';
+          var ts = document.createElement('span');
+          ts.className = 'ts';
+          ts.textContent = '[' + log.time + ']';
+
+          var tag = document.createElement('span');
+          tag.className = isHigh ? 'tag-high' : 'tag-low';
+          tag.textContent = isHigh ? '[High Priority]' : '[Low Priority]';
+
+          // textContent (not innerHTML) so a log message can never inject HTML/script
+          var msg = document.createElement('span');
+          msg.className = 'msg';
+          msg.textContent = log.message;
+
+          line.appendChild(ts);
+          line.appendChild(document.createTextNode(' '));
+          line.appendChild(tag);
+          line.appendChild(document.createTextNode(' '));
+          line.appendChild(msg);
 
           consoleEl.appendChild(line);
         });
@@ -100,14 +139,64 @@
 
       renderLogs();
 
-      // Hook for live updates later:
-      // function addLog(priority, message) {
-      //   var now = new Date();
-      //   var t = [now.getHours(), now.getMinutes(), now.getSeconds()]
-      //     .map(function (n) { return String(n).padStart(2, '0'); }).join(':');
-      //   logs.push({ priority: priority, time: t, message: message });
-      //   renderLogs();
-      // }
+      // Live updates: call addLog('low' | 'high', 'message')
+      function addLog(priority, message) {
+        var now = new Date();
+        var t = [now.getHours(), now.getMinutes(), now.getSeconds()]
+          .map(function (n) { return String(n).padStart(2, '0'); }).join(':');
+        logs.push({ priority: priority, time: t, message: message });
+        renderLogs();
+      }
+
+      // ---- studcons command box ----
+      // The Firebase scripts above are `defer`red, so they only exist once the
+      // page has finished parsing. Wait for DOMContentLoaded before using them.
+      window.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('cmdForm');
+        var input = document.getElementById('cmdInput');
+        var status = document.getElementById('cmdStatus');
+
+        var db = firebase.firestore();
+        var auth = firebase.auth();
+
+        // Only enable the box when someone is signed in.
+        // (Your Firestore rules still decide who is actually allowed to write.)
+        auth.onAuthStateChanged(function (user) {
+          if (user) {
+            input.disabled = false;
+            status.textContent = 'Press Enter to send to Roblox Studio.';
+          } else {
+            input.disabled = true;
+            status.textContent = 'Sign in as admin to send commands.';
+          }
+        });
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var text = input.value.trim();
+          if (!text || !auth.currentUser) return;
+
+          input.disabled = true;
+          status.textContent = 'Sending…';
+
+          db.collection('studcons_commands').add({
+            text: text,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            by: auth.currentUser.uid
+          }).then(function () {
+            addLog('low', 'Sent: ' + text);
+            input.value = '';
+            status.textContent = 'Sent.';
+          }).catch(function (err) {
+            console.error(err);
+            addLog('high', 'Command failed: ' + err.message);
+            status.textContent = 'Failed to send. Check the console and your Firestore rules.';
+          }).then(function () {
+            input.disabled = false;
+            input.focus();
+          });
+        });
+      });
     </script>
   </body>
 </html>
