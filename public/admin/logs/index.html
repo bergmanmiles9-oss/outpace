@@ -29,7 +29,6 @@
 
     <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
   </head>
   <body>
@@ -48,7 +47,7 @@
         <button type="button" class="filter-btn" data-filter="high">[High Priority]</button>
       </div>
 
-      <!-- Command box: sends commands to Roblox through Firestore -->
+      <!-- Command box: sends commands to Roblox through the Cloudflare Worker -->
       <form id="cmdForm" class="console-cmd" autocomplete="off">
         <input id="cmdInput" type="text" placeholder='&lt;studcons&gt; print("Testing")' disabled>
         <p class="console-cmd-status" id="cmdStatus">Checking sign-in…</p>
@@ -156,11 +155,11 @@
         var input = document.getElementById('cmdInput');
         var status = document.getElementById('cmdStatus');
 
-        var db = firebase.firestore();
+        var WORKER_URL = 'https://studcons.bergmanmiles9.workers.dev';
         var auth = firebase.auth();
 
         // Only enable the box when someone is signed in.
-        // (Your Firestore rules still decide who is actually allowed to write.)
+        // (The Worker checks the admin UID, so this only controls the UI.)
         auth.onAuthStateChanged(function (user) {
           if (user) {
             input.disabled = false;
@@ -179,10 +178,17 @@
           input.disabled = true;
           status.textContent = 'Sending…';
 
-          db.collection('studcons_commands').add({
-            text: text,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            by: auth.currentUser.uid
+          auth.currentUser.getIdToken().then(function (token) {
+            return fetch(WORKER_URL + '/command', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+              },
+              body: JSON.stringify({ text: text })
+            });
+          }).then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
           }).then(function () {
             addLog('low', 'Sent: ' + text);
             input.value = '';
@@ -190,7 +196,7 @@
           }).catch(function (err) {
             console.error(err);
             addLog('high', 'Command failed: ' + err.message);
-            status.textContent = 'Failed to send. Check the console and your Firestore rules.';
+            status.textContent = 'Failed to send. Check the browser console and your Worker settings.';
           }).then(function () {
             input.disabled = false;
             input.focus();
