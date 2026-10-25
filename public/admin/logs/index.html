@@ -27,9 +27,6 @@
       .console-cmd-status { margin: 6px 0 0; font-size: 0.85em; opacity: 0.7; min-height: 1.2em; }
     </style>
 
-    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
   </head>
   <body>
     <div class="bg"></div>
@@ -49,8 +46,8 @@
 
       <!-- Command box: sends commands to Roblox through the Cloudflare Worker -->
       <form id="cmdForm" class="console-cmd" autocomplete="off">
-        <input id="cmdInput" type="text" placeholder='&lt;studcons&gt; print("Testing")' disabled>
-        <p class="console-cmd-status" id="cmdStatus">Checking sign-in…</p>
+        <input id="cmdInput" type="text" placeholder='&lt;studcons&gt; print("Testing")'>
+        <p class="console-cmd-status" id="cmdStatus">Press Enter to send to Roblox Studio.</p>
       </form>
 
       <p class="console-empty" id="emptyMsg">There are no logs here. Check bans or moderation.</p>
@@ -148,45 +145,25 @@
       }
 
       // ---- studcons command box ----
-      // The Firebase scripts above are `defer`red, so they only exist once the
-      // page has finished parsing. Wait for DOMContentLoaded before using them.
-      window.addEventListener('DOMContentLoaded', function () {
+      var WORKER_URL = 'https://studcons.bergmanmiles9.workers.dev';
+
+      (function () {
         var form = document.getElementById('cmdForm');
         var input = document.getElementById('cmdInput');
         var status = document.getElementById('cmdStatus');
 
-        var WORKER_URL = 'https://studcons.bergmanmiles9.workers.dev';
-        var auth = firebase.auth();
-
-        // Only enable the box when someone is signed in.
-        // (The Worker checks the admin UID, so this only controls the UI.)
-        auth.onAuthStateChanged(function (user) {
-          if (user) {
-            input.disabled = false;
-            status.textContent = 'Press Enter to send to Roblox Studio.';
-          } else {
-            input.disabled = true;
-            status.textContent = 'Sign in as admin to send commands.';
-          }
-        });
-
         form.addEventListener('submit', function (e) {
           e.preventDefault();
           var text = input.value.trim();
-          if (!text || !auth.currentUser) return;
+          if (!text) return;
 
           input.disabled = true;
           status.textContent = 'Sending…';
 
-          auth.currentUser.getIdToken().then(function (token) {
-            return fetch(WORKER_URL + '/command', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-              },
-              body: JSON.stringify({ text: text })
-            });
+          fetch(WORKER_URL + '/command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
           }).then(function (res) {
             if (!res.ok) throw new Error('HTTP ' + res.status);
           }).then(function () {
@@ -202,7 +179,7 @@
             input.focus();
           });
         });
-      });
+      })();
     </script>
   </body>
 </html>
