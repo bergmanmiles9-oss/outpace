@@ -3,30 +3,28 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Outpace Coming Soon</title>
-    <meta name="description" content="Outpace Coming Soon">
+    <title>Outpace Staff Login</title>
+    <meta name="description" content="Outpace staff login">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
     <style>
       :root {
-        --bg: #08090b;
-        --line: rgba(255, 255, 255, 0.06);
-        --text: #ece9e4;
-        --text-dim: #85888e;
-        --accent: #c9553c;
-        --accent-ink: #180a06;
+        --bg: #060d09;
+        --line: rgba(255, 255, 255, 0.07);
+        --text: #f2ede3;
+        --text-dim: #8f9b93;
+        --red: #c8372d;
+        --green: #2f8f5b;
+        --gold: #e2b655;
+        --gold-hi: #f0cb74;
+        --gold-ink: #1a1204;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
       }
 
       * { box-sizing: border-box; }
+      [hidden] { display: none !important; }
 
       html, body {
         margin: 0;
@@ -49,21 +47,29 @@
         -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, black 20%, transparent 85%);
       }
 
-      .glow {
+      .glow-red, .glow-green {
         position: fixed;
-        top: -25%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 820px;
-        height: 640px;
-        background: radial-gradient(closest-side, rgba(201, 85, 60, 0.16), transparent 72%);
+        top: -22%;
+        width: 700px;
+        height: 620px;
         z-index: 0;
         pointer-events: none;
         animation: breathe 7s ease-in-out infinite;
       }
+      .glow-red {
+        left: 50%;
+        margin-left: -640px;
+        background: radial-gradient(closest-side, rgba(200, 55, 45, 0.2), transparent 72%);
+      }
+      .glow-green {
+        left: 50%;
+        margin-left: -60px;
+        background: radial-gradient(closest-side, rgba(47, 143, 91, 0.2), transparent 72%);
+        animation-delay: -3.5s;
+      }
 
       @keyframes breathe {
-        0%, 100% { opacity: 0.7; }
+        0%, 100% { opacity: 0.65; }
         50% { opacity: 1; }
       }
 
@@ -72,20 +78,59 @@
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(0,0,0,0.7) 100%);
+        background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(0, 0, 0, 0.72) 100%);
       }
 
-      .sweep {
+      #snow {
         position: fixed;
         inset: 0;
+        width: 100%;
+        height: 100%;
         z-index: 1;
         pointer-events: none;
-        background: linear-gradient(100deg, transparent 40%, rgba(236, 233, 228, 0.08) 48%, transparent 56%);
-        transform: translateX(-60%);
-        animation: sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
       }
 
-      @keyframes sweep { to { transform: translateX(60%); } }
+      /* string lights */
+      .lights {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 44px;
+        z-index: 12;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .lights::before {
+        content: "";
+        position: absolute;
+        left: 0; right: 0;
+        top: 4px;
+        height: 2px;
+        background: #0e1a13;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .bulb {
+        position: absolute;
+        width: 12px;
+        height: 18px;
+        margin-left: -6px;
+        border-radius: 50% 50% 50% 50% / 38% 38% 62% 62%;
+        background: var(--c);
+        box-shadow: 0 0 10px 2px var(--c), 0 0 22px 4px color-mix(in srgb, var(--c) 45%, transparent);
+        animation: twinkle 2.4s ease-in-out infinite;
+      }
+      .bulb::before {
+        content: "";
+        position: absolute;
+        left: 2px; right: 2px;
+        top: -5px;
+        height: 6px;
+        border-radius: 2px 2px 0 0;
+        background: #1c2a22;
+      }
+      @keyframes twinkle {
+        0%, 100% { opacity: 1; }
+        45% { opacity: 0.35; }
+      }
 
       nav {
         position: fixed;
@@ -94,9 +139,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 22px clamp(20px, 5vw, 56px);
-        backdrop-filter: blur(10px);
-        background: linear-gradient(to bottom, rgba(8,9,11,0.9), rgba(8,9,11,0));
+        padding: 44px clamp(20px, 5vw, 56px) 18px;
+        background: linear-gradient(to bottom, rgba(6, 13, 9, 0.92), rgba(6, 13, 9, 0));
       }
 
       .nav-brand {
@@ -104,7 +148,7 @@
         font-weight: 700;
         font-size: 1.35rem;
         letter-spacing: 0.02em;
-        color: var(--text);
+        color: var(--gold);
         text-decoration: none;
         text-transform: uppercase;
       }
@@ -117,28 +161,30 @@
         justify-content: center;
         padding: 10px 18px;
         border-radius: 6px;
+        font: inherit;
         font-size: 0.92rem;
         font-weight: 500;
         text-decoration: none;
+        cursor: pointer;
         transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
         white-space: nowrap;
       }
-
-      .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
       .btn-ghost {
         color: var(--text);
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(255, 255, 255, 0.03);
       }
-      .btn-ghost:hover { border-color: rgba(255, 255, 255, 0.24); background: rgba(255, 255, 255, 0.05); }
+      .btn-ghost:hover { border-color: rgba(226, 182, 85, 0.5); background: rgba(255, 255, 255, 0.06); }
 
       .btn-primary {
-        color: var(--accent-ink);
-        background: var(--accent);
-        border: 1px solid var(--accent);
+        color: var(--gold-ink);
+        background: var(--gold);
+        border: 1px solid var(--gold);
       }
-      .btn-primary:hover { background: #d76a4f; transform: translateY(-1px); }
+      .btn-primary:hover { background: var(--gold-hi); transform: translateY(-1px); }
+      .btn-primary:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
       main {
         position: relative;
@@ -147,76 +193,136 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 120px 24px 80px;
+        padding: 130px 24px 110px;
       }
 
       .hero {
+        width: 100%;
+        max-width: 400px;
         text-align: center;
-        max-width: 560px;
         opacity: 0;
         transform: translateY(14px);
         animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
       }
+      @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
       .hero-title {
         font-family: 'Big Shoulders Display', sans-serif;
         font-weight: 700;
-        font-size: clamp(2.6rem, 7vw, 4rem);
+        font-size: clamp(2.6rem, 7vw, 3.8rem);
         line-height: 0.98;
         letter-spacing: 0.01em;
         text-transform: uppercase;
-        margin: 0 0 16px;
-        color: var(--text);
+        margin: 0 0 12px;
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #b98a2c);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
 
       .hero-sub {
-        font-size: clamp(1rem, 2vw, 1.1rem);
+        font-size: 1rem;
         color: var(--text-dim);
-        margin: 0 0 36px;
+        margin: 0 0 28px;
         line-height: 1.55;
       }
 
-      .landing-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
+      .card {
+        text-align: left;
+        padding: 26px 24px 24px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        border-top: 2px solid var(--gold);
+        background: rgba(10, 20, 15, 0.78);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
       }
-      .landing-buttons .btn { padding: 12px 22px; font-size: 0.95rem; }
 
-      @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text);
+        margin: 0 0 6px;
+      }
 
-      #load {
+      input {
+        width: 100%;
+        padding: 12px 14px;
+        margin: 0 0 18px;
+        font: inherit;
+        font-size: 0.97rem;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 6px;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--gold);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .card .btn { width: 100%; padding: 13px 18px; font-size: 1rem; }
+      .card .btn + .btn { margin-top: 10px; }
+
+      .error {
+        margin: 0 0 16px;
+        padding: 10px 12px;
+        font-size: 0.88rem;
+        line-height: 1.4;
+        color: #ffd9d4;
+        background: rgba(200, 55, 45, 0.16);
+        border: 1px solid rgba(200, 55, 45, 0.5);
+        border-radius: 6px;
+      }
+
+      .who {
+        margin: 0 0 20px;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      .who strong { color: var(--gold-hi); font-weight: 600; }
+
+      /* snow drift along the bottom */
+      .snowbank {
         position: fixed;
-        left: 24px;
-        bottom: 18px;
-        z-index: 3;
-        font-size: 0.72rem;
-        color: var(--text-dim);
-        opacity: 0.5;
-        margin: 0;
+        left: 0; right: 0; bottom: 0;
+        height: 64px;
+        z-index: 1;
+        pointer-events: none;
       }
+      .snowbank svg { display: block; width: 100%; height: 100%; }
+      .snowbank .back { fill: #9fb0c4; opacity: 0.45; }
+      .snowbank .front { fill: #e8eef5; }
 
       @media (max-width: 560px) {
         .nav-links { gap: 6px; }
         .btn { padding: 8px 12px; font-size: 0.82rem; }
-        .landing-buttons { flex-direction: column; width: 100%; }
-        .landing-buttons .btn { width: 100%; }
       }
 
       @media (prefers-reduced-motion: reduce) {
         .hero { animation: none; opacity: 1; transform: none; }
-        .glow { animation: none; opacity: 0.85; }
-        .sweep { display: none; }
+        .glow-red, .glow-green { animation: none; opacity: 0.85; }
+        .bulb { animation: none; }
+        #snow { display: none; }
       }
     </style>
   </head>
   <body>
     <div class="corridor" aria-hidden="true"></div>
-    <div class="glow" aria-hidden="true"></div>
+    <div class="glow-red" aria-hidden="true"></div>
+    <div class="glow-green" aria-hidden="true"></div>
     <div class="vignette" aria-hidden="true"></div>
-    <div class="sweep" aria-hidden="true"></div>
+    <canvas id="snow" aria-hidden="true"></canvas>
+    <div class="lights" id="lights" aria-hidden="true"></div>
+    <div class="snowbank" aria-hidden="true">
+      <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+        <path class="back" d="M0 42 C120 18 220 52 340 34 S560 12 700 36 S960 54 1080 30 S1180 22 1200 30 V80 H0 Z"/>
+        <path class="front" d="M0 58 C140 40 260 66 400 52 S640 36 780 56 S1040 70 1200 48 V80 H0 Z"/>
+      </svg>
+    </div>
 
     <nav>
       <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
@@ -228,31 +334,187 @@
 
     <main>
       <div class="hero">
-        <h1 class="hero-title">Coming soon&hellip;</h1>
-        <p class="hero-sub">The login feature will be available by 10/1/26 or earlier.</p>
-        <div class="landing-buttons">
-          <a class="btn btn-ghost" href="https://www.out-pace.org/">Home</a>
-          <a class="btn btn-primary" href="https://www.out-pace.org/apply">Apply for Staff</a>
+        <h1 class="hero-title">Staff login</h1>
+        <p class="hero-sub">Sign in with the account the Outpace team gave you.</p>
+
+        <div class="card">
+          <form id="login-form" autocomplete="on">
+            <div id="error" class="error" role="alert" hidden></div>
+
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+            <button id="submit" class="btn btn-primary" type="submit">Log in</button>
+          </form>
+
+          <div id="signed-in" hidden>
+            <p class="who">Signed in as <strong id="who"></strong> (<span id="role"></span>).</p>
+            <button id="logout" class="btn btn-ghost" type="button">Log out</button>
+          </div>
         </div>
       </div>
     </main>
 
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        var loadEl = document.getElementById('load');
-        try {
-          var app = firebase.app();
-          var features = ['auth', 'firestore', 'analytics'].filter(function (f) {
-            return typeof app[f] === 'function';
-          });
-          loadEl.textContent = 'Firebase SDK loaded with ' + features.join(', ');
-        } catch (err) {
-          console.error(err);
-          loadEl.textContent = 'Error loading the Firebase SDK.';
+      (function () {
+        // Where to send staff after login. Leave null to stay on this page.
+        var AFTER_LOGIN_URL = null;
+
+        var $ = function (id) { return document.getElementById(id); };
+        var form = $('login-form');
+        var panel = $('signed-in');
+        var errorBox = $('error');
+        var submitBtn = $('submit');
+
+        function safeNext() {
+          var next = new URLSearchParams(location.search).get('next');
+          var ok = next && next.charAt(0) === '/' && next.charAt(1) !== '/' && next.charAt(1) !== '\\';
+          return ok ? next : AFTER_LOGIN_URL;
         }
-      });
+
+        function showError(message) {
+          errorBox.textContent = message;
+          errorBox.hidden = false;
+        }
+
+        function showSignedIn(user) {
+          var next = safeNext();
+          if (next) { location.href = next; return; }
+          $('who').textContent = user.username;
+          $('role').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+          form.hidden = true;
+          panel.hidden = false;
+        }
+
+        function showForm() {
+          panel.hidden = true;
+          form.hidden = false;
+          $('password').value = '';
+        }
+
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          errorBox.hidden = true;
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Logging in…';
+
+          fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              username: $('username').value.trim(),
+              password: $('password').value
+            })
+          })
+            .then(function (res) {
+              return res.json().catch(function () { return {}; }).then(function (data) {
+                return { ok: res.ok, data: data };
+              });
+            })
+            .then(function (result) {
+              if (result.ok) {
+                showSignedIn(result.data);
+              } else {
+                showError(result.data.error || 'Login failed. Check your username and password.');
+              }
+            })
+            .catch(function () {
+              showError('Could not reach the server. Check your connection and try again.');
+            })
+            .then(function () {
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Log in';
+            });
+        });
+
+        $('logout').addEventListener('click', function () {
+          fetch('/api/logout', { method: 'POST', credentials: 'same-origin' })
+            .then(showForm, showForm);
+        });
+
+        // Already signed in? Skip the form.
+        fetch('/api/me', { credentials: 'same-origin' })
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .then(function (user) { if (user && user.username) showSignedIn(user); })
+          .catch(function () {});
+
+        // String lights
+        var strand = $('lights');
+        var colors = ['#c8372d', '#e2b655', '#2f8f5b', '#f2ede3'];
+        function buildLights() {
+          strand.innerHTML = '';
+          var gap = 44;
+          var count = Math.ceil(window.innerWidth / gap) + 1;
+          for (var i = 0; i < count; i++) {
+            var bulb = document.createElement('span');
+            bulb.className = 'bulb';
+            bulb.style.left = (i * gap + 10) + 'px';
+            bulb.style.top = (8 + Math.abs(Math.sin(i * 0.55)) * 10) + 'px';
+            bulb.style.setProperty('--c', colors[i % colors.length]);
+            bulb.style.animationDelay = ((i * 7) % 5) * 0.45 + 's';
+            strand.appendChild(bulb);
+          }
+        }
+        buildLights();
+        window.addEventListener('resize', buildLights);
+
+        // Snowfall
+        var canvas = $('snow');
+        var ctx = canvas.getContext('2d');
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var flakes = [];
+        var w = 0, h = 0;
+
+        function resize() {
+          w = canvas.width = window.innerWidth;
+          h = canvas.height = window.innerHeight;
+        }
+
+        function makeFlake(startAnywhere) {
+          return {
+            x: Math.random() * w,
+            y: startAnywhere ? Math.random() * h : -10,
+            r: 0.8 + Math.random() * 2.4,
+            speed: 0.4 + Math.random() * 1.1,
+            drift: Math.random() * Math.PI * 2,
+            sway: 0.2 + Math.random() * 0.6
+          };
+        }
+
+        function seedFlakes() {
+          var count = Math.min(140, Math.round(w / 11));
+          flakes = [];
+          for (var i = 0; i < count; i++) flakes.push(makeFlake(true));
+        }
+
+        function frame() {
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+          for (var i = 0; i < flakes.length; i++) {
+            var f = flakes[i];
+            f.y += f.speed;
+            f.drift += 0.012;
+            f.x += Math.sin(f.drift) * f.sway;
+            if (f.y > h + 10) flakes[i] = makeFlake(false);
+            ctx.globalAlpha = 0.35 + f.r / 4;
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          requestAnimationFrame(frame);
+        }
+
+        if (!reduceMotion) {
+          resize();
+          seedFlakes();
+          frame();
+          window.addEventListener('resize', function () { resize(); seedFlakes(); });
+        }
+      })();
     </script>
   </body>
 </html>
