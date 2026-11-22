@@ -17,12 +17,18 @@
 
     <style>
       :root {
-        --bg: #08090b;
-        --line: rgba(255, 255, 255, 0.09);
-        --text: #ece9e4;
-        --text-dim: #94979d;
-        --accent: #c9553c;
-        --accent-ink: #180a06;
+        --bg: #07111f;
+        --night: #0d2031;
+        --line: rgba(220, 182, 95, 0.2);
+        --text: #eef3fa;
+        --text-dim: #9db0c7;
+        --accent: #ffb45e;
+        --accent-hot: #ffdca4;
+        --accent-ink: #1a0d05;
+        --gold: #dcb65f;
+        --warn: #e0645a;
+        --warn-rgb: 224, 100, 90;
+        --lit: 255, 180, 94;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
       }
 
@@ -35,27 +41,22 @@
         color: var(--text);
       }
 
-      body { min-height: 100vh; position: relative; }
-
-      .corridor {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        background-image: repeating-linear-gradient(
-          90deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 130px
-        );
-        mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black 20%, transparent 85%);
-        -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black 20%, transparent 85%);
+      body {
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        background: linear-gradient(180deg, var(--bg), var(--night)) fixed;
       }
 
       .glow {
         position: fixed;
-        top: -30%;
+        top: -14%;
         left: 50%;
         transform: translateX(-50%);
-        width: 780px;
-        height: 560px;
-        background: radial-gradient(closest-side, rgba(201, 85, 60, 0.13), transparent 72%);
+        width: 900px;
+        max-width: 140vw;
+        height: 640px;
+        background: radial-gradient(closest-side, rgba(var(--lit), 0.13), transparent 72%);
         z-index: 0;
         pointer-events: none;
         animation: breathe 7s ease-in-out infinite;
@@ -68,20 +69,26 @@
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        background: radial-gradient(ellipse 90% 60% at 50% 0%, transparent 55%, rgba(0,0,0,0.6) 100%);
+        background: radial-gradient(ellipse 90% 60% at 50% 0%, transparent 55%, rgba(3, 9, 20, 0.5) 100%);
       }
 
-      .sweep {
-        position: fixed;
-        inset: 0;
-        z-index: 1;
-        pointer-events: none;
-        background: linear-gradient(100deg, transparent 40%, rgba(236, 233, 228, 0.07) 48%, transparent 56%);
-        transform: translateX(-60%);
-        animation: sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
-      }
+      #snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
-      @keyframes sweep { to { transform: translateX(60%); } }
+      /* a caged maintenance lamp hangs beside the form on wide screens and flickers on once */
+      .lamp { display: none; }
+      @media (min-width: 1100px) {
+        .lamp {
+          --sw: 72px; --lamp-y: 120px;
+          display: block; position: absolute; top: 0; right: 3vw;
+          width: clamp(200px, 24vw, 360px); height: 70vh;
+          z-index: 1; pointer-events: none;
+        }
+      }
+      .cord { position: absolute; left: 50%; top: 0; width: 2px; height: var(--lamp-y); margin-left: -1px; background: #000; }
+      .shade { position: absolute; left: 50%; top: var(--lamp-y); width: var(--sw); height: calc(var(--sw) * .48); margin-left: calc(var(--sw) / -2); border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(180deg, #4a4e57, #1c1d21); }
+      .bulb { position: absolute; left: 50%; top: calc(var(--lamp-y) + var(--sw) * .48 - 4px); width: calc(var(--sw) * .5); height: 10px; margin-left: calc(var(--sw) / -4); border-radius: 50%; background: var(--accent-hot); box-shadow: 0 0 40px 14px rgba(var(--lit), .6); animation: flick 1.7s linear .4s backwards; }
+      .cone { position: absolute; inset: calc(var(--lamp-y) + var(--sw) * .48) 0 0 0; background: linear-gradient(180deg, rgba(var(--lit), .28), rgba(var(--lit), .02)); clip-path: polygon(calc(50% - var(--sw) / 4) 0, calc(50% + var(--sw) / 4) 0, 100% 100%, 0 100%); animation: flick 1.7s linear .4s backwards; }
+      @keyframes flick { 0%, 14% { opacity: 0; } 16% { opacity: .9; } 20% { opacity: .05; } 26% { opacity: 1; } 32% { opacity: .35; } 38%, 100% { opacity: 1; } }
 
       nav {
         position: sticky;
@@ -92,7 +99,7 @@
         justify-content: space-between;
         padding: 22px clamp(20px, 5vw, 56px);
         backdrop-filter: blur(10px);
-        background: linear-gradient(to bottom, rgba(8,9,11,0.92), rgba(8,9,11,0.75));
+        background: linear-gradient(to bottom, rgba(7, 17, 31, 0.92), rgba(7, 17, 31, 0.75));
         border-bottom: 1px solid var(--line);
       }
 
@@ -124,21 +131,21 @@
         white-space: nowrap;
       }
 
-      .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .btn:focus-visible { outline: 2px solid var(--accent-hot); outline-offset: 2px; }
 
       .btn-ghost {
         color: var(--text);
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(255, 255, 255, 0.03);
       }
-      .btn-ghost:hover { border-color: rgba(255, 255, 255, 0.24); background: rgba(255, 255, 255, 0.05); }
+      .btn-ghost:hover { border-color: rgba(var(--lit), 0.55); background: rgba(255, 255, 255, 0.06); }
 
       .btn-primary {
         color: var(--accent-ink);
         background: var(--accent);
         border: 1px solid var(--accent);
       }
-      .btn-primary:hover { background: #d76a4f; transform: translateY(-1px); }
+      .btn-primary:hover { background: var(--accent-hot); border-color: var(--accent-hot); transform: translateY(-1px); }
 
       main {
         position: relative;
@@ -166,15 +173,16 @@
         letter-spacing: 0.01em;
         line-height: 1;
         margin: 0 0 28px;
+        text-shadow: 0 0 60px rgba(var(--lit), 0.2);
       }
 
       .warning {
         display: flex;
         gap: 12px;
         align-items: flex-start;
-        border: 1px solid rgba(201, 85, 60, 0.35);
-        border-left: 3px solid var(--accent);
-        background: rgba(201, 85, 60, 0.08);
+        border: 1px solid rgba(var(--warn-rgb), 0.4);
+        border-left: 3px solid var(--warn);
+        background: rgba(var(--warn-rgb), 0.1);
         border-radius: 6px;
         padding: 16px 18px;
         font-size: 0.95rem;
@@ -183,7 +191,7 @@
         margin-bottom: 40px;
       }
 
-      .warning svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+      .warning svg { flex-shrink: 0; margin-top: 2px; color: var(--warn); }
 
       form { display: flex; flex-direction: column; }
 
@@ -204,7 +212,7 @@
         line-height: 1.5;
       }
 
-      .field > label a { color: var(--accent); }
+      .field > label a { color: var(--gold); text-underline-offset: 3px; }
       .field > label strong { font-weight: 700; }
 
       input[type="text"],
@@ -214,7 +222,7 @@
         font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.95rem;
         color: var(--text);
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid var(--line);
         border-radius: 6px;
         padding: 12px 14px;
@@ -222,13 +230,13 @@
         transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
       }
 
-      input::placeholder, textarea::placeholder { color: var(--text-dim); opacity: 0.75; }
+      input::placeholder, textarea::placeholder { color: var(--text-dim); opacity: 0.8; }
 
       input:focus, select:focus, textarea:focus {
         outline: none;
         border-color: var(--accent);
-        background: rgba(255, 255, 255, 0.045);
-        box-shadow: 0 0 0 3px rgba(201, 85, 60, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 0 0 3px rgba(var(--lit), 0.16);
       }
 
       textarea { min-height: 100px; resize: vertical; line-height: 1.55; }
@@ -236,12 +244,13 @@
       select {
         appearance: none;
         -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394979d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239db0c7' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 14px center;
         padding-right: 40px;
         cursor: pointer;
       }
+      select option { background: #0d2031; color: var(--text); }
 
       .radio-group {
         display: flex;
@@ -276,12 +285,19 @@
       }
 
       #load {
+        position: relative;
+        z-index: 2;
         max-width: 640px;
         margin: 28px auto 0;
+        padding: 0 24px;
         font-size: 0.75rem;
         color: var(--text-dim);
-        opacity: 0.55;
+        opacity: 0.6;
       }
+
+      /* snow drift, last thing on the page */
+      .drift { position: relative; z-index: 2; height: 100px; margin-top: 40px; pointer-events: none; }
+      .drift svg { display: block; width: 100%; height: 100%; }
 
       @media (max-width: 560px) {
         .nav-links { gap: 6px; }
@@ -292,15 +308,16 @@
       @media (prefers-reduced-motion: reduce) {
         .doc { animation: none; opacity: 1; transform: none; }
         .glow { animation: none; opacity: 0.85; }
-        .sweep { display: none; }
+        .bulb, .cone { animation: none; }
+        #snow { display: none; }
       }
     </style>
   </head>
   <body>
-    <div class="corridor" aria-hidden="true"></div>
     <div class="glow" aria-hidden="true"></div>
     <div class="vignette" aria-hidden="true"></div>
-    <div class="sweep" aria-hidden="true"></div>
+    <div class="lamp" aria-hidden="true"><div class="cone"></div><div class="cord"></div><div class="shade"></div><div class="bulb"></div></div>
+    <canvas id="snow" aria-hidden="true"></canvas>
 
     <nav>
       <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
@@ -320,14 +337,14 @@
             <path d="M12 10v4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
             <circle cx="12" cy="17.3" r="1" fill="currentColor"/>
           </svg>
-          <span>Please remember that lying on your application or using any other third-party apps to assist you with your application, specifically AI, your application will be immediately denied.</span>
+          <span>Lying on your application, or using third-party tools to help you write it (AI included), will get it denied right away.</span>
         </div>
 
         <form id="staffForm" onsubmit="return handleSubmit(event)">
 
           <div class="field">
             <label>
-              Have you read our <a href="https://www.out-pace.org/tos" target="_blank">Terms and Conditions</a>?
+              Did you read our <a href="https://www.out-pace.org/tos" target="_blank">Terms and Conditions</a> before applying?
             </label>
             <div class="radio-group">
               <label><input type="radio" name="tos" value="yes" required> Yes</label>
@@ -336,33 +353,33 @@
           </div>
 
           <div class="field">
-            <label for="discord">What is your Discord Username?</label>
-            <input type="text" id="discord" name="discord" placeholder="username or username#0000" required>
+            <label for="discord">What’s your Discord username?</label>
+            <input type="text" id="discord" name="discord" placeholder="Your username, or username#0000" required>
           </div>
 
-                    <div class="field">
+          <div class="field">
             <label for="discordId">
-              What is your Discord User ID? Enable Developer Mode in Discord Settings → Advanced, then right-click your own profile picture and choose "Copy User ID."
+              What’s your Discord user ID? To find it, turn on Developer Mode in Discord under Settings → Advanced, then right-click your own profile picture and choose “Copy User ID.”
             </label>
             <input type="text" id="discordId" name="discordId" placeholder="e.g. 1534332448790282372" pattern="[0-9]{15,22}" required>
           </div>
 
           <div class="field">
             <label for="roblox">
-              What is your Roblox username? Remember to use your <strong>USERNAME</strong> and not your <strong>DISPLAY NAME</strong>.
+              What’s your Roblox username? Enter your <strong>username</strong>, not your <strong>display name</strong>.
             </label>
             <input type="text" id="roblox" name="roblox" placeholder="Your Roblox username" required>
           </div>
 
           <div class="field">
-            <label for="age">How old are you?</label>
-            <input type="number" id="age" name="age" min="13" max="99" placeholder="Age" required>
+            <label for="age">What’s your age?</label>
+            <input type="number" id="age" name="age" min="13" max="99" placeholder="Your age" required>
           </div>
 
           <div class="field">
-            <label for="timezone">What is your timezone?</label>
+            <label for="timezone">Which timezone are you in?</label>
             <select id="timezone" name="timezone" required>
-              <option value="" disabled selected>Select timezone</option>
+              <option value="" disabled selected>Choose your timezone</option>
               <option value="UTC-12">UTC−12</option>
               <option value="UTC-11">UTC−11</option>
               <option value="UTC-10">UTC−10 (Hawaii)</option>
@@ -393,14 +410,14 @@
           </div>
 
           <div class="field">
-            <label for="hours">How many hours per week can you dedicate to staff duties?</label>
+            <label for="hours">How many hours each week can you spend on staff duties?</label>
             <input type="number" id="hours" name="hours" min="1" max="168" placeholder="e.g. 10" required>
           </div>
 
           <div class="field">
-            <label for="role">Which staff role are you most interested in?</label>
+            <label for="role">Which staff role interests you most?</label>
             <select id="role" name="role" required>
-              <option value="" disabled selected>Select a role</option>
+              <option value="" disabled selected>Choose a role</option>
               <option value="moderator">Moderator</option>
               <option value="helper">Helper / Support</option>
               <option value="developer">Developer</option>
@@ -411,17 +428,17 @@
           </div>
 
           <div class="field">
-            <label for="why">Why do you want to join the Outpace staff team?</label>
-            <textarea id="why" name="why" placeholder="Be honest and specific..." required></textarea>
+            <label for="why">What makes you want to join the Outpace staff team?</label>
+            <textarea id="why" name="why" placeholder="Be honest and specific…" required></textarea>
           </div>
 
           <div class="field">
-            <label for="experience">Do you have any previous moderation or staff experience? If yes, describe it.</label>
-            <textarea id="experience" name="experience" placeholder="Servers, roles, what you did..." required></textarea>
+            <label for="experience">Have you moderated or been on a staff team before? If so, tell us about it.</label>
+            <textarea id="experience" name="experience" placeholder="Which servers, which roles, and what you did…" required></textarea>
           </div>
 
           <div class="field">
-            <label>Have you ever been banned, muted, or punished in any Discord server or Roblox game?</label>
+            <label>Have you ever been banned, muted, or otherwise punished in a Discord server or Roblox game?</label>
             <div class="radio-group">
               <label><input type="radio" name="banned" value="yes" required> Yes</label>
               <label><input type="radio" name="banned" value="no"> No</label>
@@ -429,17 +446,17 @@
           </div>
 
           <div class="field">
-            <label for="bannedExplain">If yes to the above, explain what happened. If no, type N/A.</label>
-            <textarea id="bannedExplain" name="bannedExplain" placeholder="N/A or explanation..." required></textarea>
+            <label for="bannedExplain">If you answered yes, explain what happened. If you answered no, type N/A.</label>
+            <textarea id="bannedExplain" name="bannedExplain" placeholder="N/A, or what happened…" required></textarea>
           </div>
 
           <div class="field">
-            <label for="toxic">A player is being toxic in chat and ignoring warnings. How would you handle it?</label>
-            <textarea id="toxic" name="toxic" placeholder="Describe your approach..." required></textarea>
+            <label for="toxic">Imagine a player keeps being toxic in chat and ignores your warnings. What would you do?</label>
+            <textarea id="toxic" name="toxic" placeholder="Describe how you’d handle it…" required></textarea>
           </div>
 
           <div class="field">
-            <label>Do you have a working microphone and can you join voice chat when needed?</label>
+            <label>Do you have a working microphone, and are you able to join voice chat when needed?</label>
             <div class="radio-group">
               <label><input type="radio" name="mic" value="yes" required> Yes</label>
               <label><input type="radio" name="mic" value="no"> No</label>
@@ -447,33 +464,33 @@
           </div>
 
           <div class="field">
-            <label for="skills">Do you have any coding, building, design, or content-creation skills that could help the project?</label>
-            <textarea id="skills" name="skills" placeholder="e.g. Lua, Blender, Photoshop, video editing..." required></textarea>
+            <label for="skills">Do you have coding, building, design, or content-creation skills that could help the project? If so, tell us what they are.</label>
+            <textarea id="skills" name="skills" placeholder="e.g. Lua, Blender, Photoshop, video editing…" required></textarea>
           </div>
 
           <div class="field">
-            <label for="scenario">You catch another staff member breaking rules. What do you do?</label>
-            <textarea id="scenario" name="scenario" placeholder="Your response..." required></textarea>
+            <label for="scenario">Say you notice another staff member breaking the rules. What do you do?</label>
+            <textarea id="scenario" name="scenario" placeholder="Your answer…" required></textarea>
           </div>
 
           <div class="field">
-            <label for="availability">What days and times are you usually online?</label>
+            <label for="availability">On which days and at what times are you usually online?</label>
             <input type="text" id="availability" name="availability" placeholder="e.g. Weekdays 4–10 PM EST, weekends flexible" required>
           </div>
 
           <div class="field">
-            <label for="referral">How did you find out about Outpace / this staff application?</label>
-            <input type="text" id="referral" name="referral" placeholder="Discord, friend, Roblox, etc." required>
+            <label for="referral">How did you hear about Outpace and this staff application?</label>
+            <input type="text" id="referral" name="referral" placeholder="Discord, a friend, Roblox, and so on" required>
           </div>
 
           <div class="field">
-            <label for="else">Anything else we should know about you?</label>
-            <textarea id="else" name="else" placeholder="Optional, but appreciated"></textarea>
+            <label for="else">Is there anything else you’d like us to know about you?</label>
+            <textarea id="else" name="else" placeholder="Optional, but we’d like to hear it"></textarea>
           </div>
 
           <div class="field">
             <label>
-              I confirm this application was written by me, without AI or third-party assistance.
+              I confirm I wrote this application myself, with no AI or other outside help.
             </label>
             <div class="radio-group">
               <label><input type="radio" name="noAI" value="yes" required> Yes, I confirm</label>
@@ -483,7 +500,7 @@
 
           <div class="btn-row">
             <a class="btn btn-ghost" href="https://www.out-pace.org/">Back</a>
-            <button type="submit" class="btn btn-primary">Submit Application</button>
+            <button type="submit" class="btn btn-primary">Submit application</button>
           </div>
         </form>
       </div>
@@ -491,8 +508,10 @@
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 
+    <div class="drift" aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 100 V44 Q140 14 280 40 T560 34 T840 44 T1120 30 T1440 40 V100Z" fill="#c9d8ee"/><path d="M0 100 V62 Q120 36 240 58 T480 54 T720 62 T960 50 T1200 60 T1440 52 V100Z" fill="#f4f8ff"/></svg></div>
+
     <script>
-            async function handleSubmit(e) {
+      async function handleSubmit(e) {
         e.preventDefault();
         var form = e.target;
         var data = Object.fromEntries(new FormData(form).entries());
@@ -506,14 +525,14 @@
 
           if (!res.ok) {
             var err = await res.json();
-            alert('Could not submit application: ' + (err.error || 'unknown error'));
+            alert('We couldn’t submit your application: ' + (err.error || 'unknown error'));
             return false;
           }
 
           window.location.href = 'https://www.out-pace.org/submitted';
         } catch (err) {
           console.error(err);
-          alert('Could not reach the application server. Please try again.');
+          alert('We couldn’t reach the application server. Please try again.');
         }
         return false;
       }
@@ -530,6 +549,44 @@
           console.error(err);
           loadEl.textContent = 'Error loading the Firebase SDK.';
         }
+
+        // snowfall
+        var canvas = document.getElementById('snow');
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion || !canvas.getContext) return;
+        var ctx = canvas.getContext('2d');
+        var flakes = [], w = 0, h = 0, dpr = 1;
+
+        function resize() {
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          w = canvas.width = window.innerWidth * dpr;
+          h = canvas.height = window.innerHeight * dpr;
+        }
+        function makeFlake(anywhere) {
+          var r = (Math.random() * 2 + 0.6) * dpr;
+          return { x: Math.random() * w, y: anywhere ? Math.random() * h : -10, r: r,
+                   vy: (r / dpr * 0.3 + 0.3) * dpr, p: Math.random() * 6.28, a: Math.random() * 0.4 + 0.25 };
+        }
+        function seed() {
+          flakes = [];
+          for (var i = 0; i < 90; i++) flakes.push(makeFlake(true));
+        }
+        function frame() {
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = '#fff';
+          for (var i = 0; i < flakes.length; i++) {
+            var f = flakes[i];
+            f.p += 0.012; f.y += f.vy; f.x += Math.sin(f.p) * 0.4 * dpr;
+            if (f.y > h + 10) { flakes[i] = makeFlake(false); continue; }
+            ctx.globalAlpha = f.a;
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          requestAnimationFrame(frame);
+        }
+        resize(); seed(); frame();
+        window.addEventListener('resize', function () { resize(); seed(); });
       });
     </script>
   </body>
