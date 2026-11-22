@@ -11,15 +11,15 @@
 
     <style>
       :root {
-        --bg: #060d09;
-        --line: rgba(255, 255, 255, 0.07);
-        --text: #f2ede3;
-        --text-dim: #8f9b93;
-        --red: #c8372d;
-        --green: #2f8f5b;
-        --gold: #e2b655;
-        --gold-hi: #f0cb74;
-        --gold-ink: #1a1204;
+        --bg: #07111f;
+        --night: #0d2031;
+        --line: rgba(220, 182, 95, 0.2);
+        --text: #eef3fa;
+        --text-dim: #9db0c7;
+        --gold: #ffb45e;
+        --gold-hi: #ffdca4;
+        --gold-ink: #1a0d05;
+        --lit: 255, 180, 94;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
       }
 
@@ -34,38 +34,24 @@
         overflow-x: hidden;
       }
 
-      body { min-height: 100vh; position: relative; }
-
-      .corridor {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        background-image: repeating-linear-gradient(
-          90deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 130px
-        );
-        mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, black 20%, transparent 85%);
-        -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, black 20%, transparent 85%);
+      body {
+        min-height: 100vh;
+        position: relative;
+        background: linear-gradient(180deg, var(--bg), var(--night)) fixed;
       }
 
-      .glow-red, .glow-green {
+      .glow {
         position: fixed;
-        top: -22%;
-        width: 700px;
-        height: 620px;
+        top: -12%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 900px;
+        max-width: 140vw;
+        height: 700px;
         z-index: 0;
         pointer-events: none;
+        background: radial-gradient(closest-side, rgba(var(--lit), 0.16), transparent 72%);
         animation: breathe 7s ease-in-out infinite;
-      }
-      .glow-red {
-        left: 50%;
-        margin-left: -640px;
-        background: radial-gradient(closest-side, rgba(200, 55, 45, 0.2), transparent 72%);
-      }
-      .glow-green {
-        left: 50%;
-        margin-left: -60px;
-        background: radial-gradient(closest-side, rgba(47, 143, 91, 0.2), transparent 72%);
-        animation-delay: -3.5s;
       }
 
       @keyframes breathe {
@@ -78,7 +64,7 @@
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(0, 0, 0, 0.72) 100%);
+        background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(3, 9, 20, 0.55) 100%);
       }
 
       #snow {
@@ -90,46 +76,42 @@
         pointer-events: none;
       }
 
-      /* string lights */
-      .lights {
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        height: 44px;
-        z-index: 12;
-        pointer-events: none;
-        overflow: hidden;
-      }
-      .lights::before {
-        content: "";
+      /* a caged maintenance lamp hangs over the sign-in and flickers on once */
+      .lamp {
+        --sw: clamp(60px, 18vw, 80px);
+        --lamp-y: 84px;
         position: absolute;
-        left: 0; right: 0;
-        top: 4px;
-        height: 2px;
-        background: #0e1a13;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: clamp(300px, 70vw, 640px);
+        height: 80vh;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .cord { position: absolute; left: 50%; top: 0; width: 2px; height: var(--lamp-y); margin-left: -1px; background: #000; }
+      .shade {
+        position: absolute; left: 50%; top: var(--lamp-y);
+        width: var(--sw); height: calc(var(--sw) * .48); margin-left: calc(var(--sw) / -2);
+        border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px;
+        background: linear-gradient(180deg, #4a4e57, #1c1d21);
       }
       .bulb {
-        position: absolute;
-        width: 12px;
-        height: 18px;
-        margin-left: -6px;
-        border-radius: 50% 50% 50% 50% / 38% 38% 62% 62%;
-        background: var(--c);
-        box-shadow: 0 0 10px 2px var(--c), 0 0 22px 4px color-mix(in srgb, var(--c) 45%, transparent);
-        animation: twinkle 2.4s ease-in-out infinite;
+        position: absolute; left: 50%; top: calc(var(--lamp-y) + var(--sw) * .48 - 4px);
+        width: calc(var(--sw) * .5); height: 10px; margin-left: calc(var(--sw) / -4);
+        border-radius: 50%; background: var(--gold-hi);
+        box-shadow: 0 0 40px 14px rgba(var(--lit), .6);
+        animation: flick 1.7s linear .4s backwards;
       }
-      .bulb::before {
-        content: "";
-        position: absolute;
-        left: 2px; right: 2px;
-        top: -5px;
-        height: 6px;
-        border-radius: 2px 2px 0 0;
-        background: #1c2a22;
+      .cone {
+        position: absolute; inset: calc(var(--lamp-y) + var(--sw) * .48) 0 0 0;
+        background: linear-gradient(180deg, rgba(var(--lit), .28), rgba(var(--lit), .02));
+        clip-path: polygon(calc(50% - var(--sw) / 4) 0, calc(50% + var(--sw) / 4) 0, 100% 100%, 0 100%);
+        animation: flick 1.7s linear .4s backwards;
       }
-      @keyframes twinkle {
-        0%, 100% { opacity: 1; }
-        45% { opacity: 0.35; }
+      @keyframes flick {
+        0%, 14% { opacity: 0; } 16% { opacity: .9; } 20% { opacity: .05; }
+        26% { opacity: 1; } 32% { opacity: .35; } 38%, 100% { opacity: 1; }
       }
 
       nav {
@@ -139,8 +121,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 44px clamp(20px, 5vw, 56px) 18px;
-        background: linear-gradient(to bottom, rgba(6, 13, 9, 0.92), rgba(6, 13, 9, 0));
+        padding: 20px clamp(20px, 5vw, 56px);
+        background: linear-gradient(to bottom, rgba(7, 17, 31, 0.92), rgba(7, 17, 31, 0));
       }
 
       .nav-brand {
@@ -148,7 +130,7 @@
         font-weight: 700;
         font-size: 1.35rem;
         letter-spacing: 0.02em;
-        color: var(--gold);
+        color: var(--text);
         text-decoration: none;
         text-transform: uppercase;
       }
@@ -169,21 +151,21 @@
         transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
         white-space: nowrap;
       }
-      .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+      .btn:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
 
       .btn-ghost {
         color: var(--text);
         border: 1px solid var(--line);
         background: rgba(255, 255, 255, 0.03);
       }
-      .btn-ghost:hover { border-color: rgba(226, 182, 85, 0.5); background: rgba(255, 255, 255, 0.06); }
+      .btn-ghost:hover { border-color: rgba(var(--lit), 0.55); background: rgba(255, 255, 255, 0.06); }
 
       .btn-primary {
         color: var(--gold-ink);
         background: var(--gold);
         border: 1px solid var(--gold);
       }
-      .btn-primary:hover { background: var(--gold-hi); transform: translateY(-1px); }
+      .btn-primary:hover { background: var(--gold-hi); border-color: var(--gold-hi); transform: translateY(-1px); }
       .btn-primary:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
       main {
@@ -193,7 +175,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 130px 24px 110px;
+        padding: 150px 24px 110px;
       }
 
       .hero {
@@ -214,7 +196,7 @@
         letter-spacing: 0.01em;
         text-transform: uppercase;
         margin: 0 0 12px;
-        background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #b98a2c);
+        background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #dcb65f);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -233,7 +215,7 @@
         border-radius: 10px;
         border: 1px solid var(--line);
         border-top: 2px solid var(--gold);
-        background: rgba(10, 20, 15, 0.78);
+        background: rgba(9, 22, 38, 0.78);
         backdrop-filter: blur(8px);
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
       }
@@ -273,8 +255,8 @@
         font-size: 0.88rem;
         line-height: 1.4;
         color: #ffd9d4;
-        background: rgba(200, 55, 45, 0.16);
-        border: 1px solid rgba(200, 55, 45, 0.5);
+        background: rgba(217, 69, 63, 0.16);
+        border: 1px solid rgba(217, 69, 63, 0.5);
         border-radius: 6px;
       }
 
@@ -294,8 +276,8 @@
         pointer-events: none;
       }
       .snowbank svg { display: block; width: 100%; height: 100%; }
-      .snowbank .back { fill: #9fb0c4; opacity: 0.45; }
-      .snowbank .front { fill: #e8eef5; }
+      .snowbank .back { fill: #c9d8ee; opacity: 0.55; }
+      .snowbank .front { fill: #f4f8ff; }
 
       @media (max-width: 560px) {
         .nav-links { gap: 6px; }
@@ -304,19 +286,17 @@
 
       @media (prefers-reduced-motion: reduce) {
         .hero { animation: none; opacity: 1; transform: none; }
-        .glow-red, .glow-green { animation: none; opacity: 0.85; }
-        .bulb { animation: none; }
+        .glow { animation: none; opacity: 0.85; }
+        .bulb, .cone { animation: none; }
         #snow { display: none; }
       }
     </style>
   </head>
   <body>
-    <div class="corridor" aria-hidden="true"></div>
-    <div class="glow-red" aria-hidden="true"></div>
-    <div class="glow-green" aria-hidden="true"></div>
+    <div class="glow" aria-hidden="true"></div>
     <div class="vignette" aria-hidden="true"></div>
+    <div class="lamp" aria-hidden="true"><div class="cone"></div><div class="cord"></div><div class="shade"></div><div class="bulb"></div></div>
     <canvas id="snow" aria-hidden="true"></canvas>
-    <div class="lights" id="lights" aria-hidden="true"></div>
     <div class="snowbank" aria-hidden="true">
       <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
         <path class="back" d="M0 42 C120 18 220 52 340 34 S560 12 700 36 S960 54 1080 30 S1180 22 1200 30 V80 H0 Z"/>
@@ -441,26 +421,6 @@
           .then(function (res) { return res.ok ? res.json() : null; })
           .then(function (user) { if (user && user.username) showSignedIn(user); })
           .catch(function () {});
-
-        // String lights
-        var strand = $('lights');
-        var colors = ['#c8372d', '#e2b655', '#2f8f5b', '#f2ede3'];
-        function buildLights() {
-          strand.innerHTML = '';
-          var gap = 44;
-          var count = Math.ceil(window.innerWidth / gap) + 1;
-          for (var i = 0; i < count; i++) {
-            var bulb = document.createElement('span');
-            bulb.className = 'bulb';
-            bulb.style.left = (i * gap + 10) + 'px';
-            bulb.style.top = (8 + Math.abs(Math.sin(i * 0.55)) * 10) + 'px';
-            bulb.style.setProperty('--c', colors[i % colors.length]);
-            bulb.style.animationDelay = ((i * 7) % 5) * 0.45 + 's';
-            strand.appendChild(bulb);
-          }
-        }
-        buildLights();
-        window.addEventListener('resize', buildLights);
 
         // Snowfall
         var canvas = $('snow');

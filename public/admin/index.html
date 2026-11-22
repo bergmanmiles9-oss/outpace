@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="christmas">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,114 +11,51 @@
 
     <style>
       :root {
-        --bg: #060d09;
-        --text: #f2ede3;
-        --accent: #e2b655;
-        --accent-ink: #1a1204;
+        --bg: #07111f;
+        --night: #0d2031;
+        --text: #eef3fa;
+        --accent: #ffb45e;
+        --accent-ink: #1a0d05;
         --accent-hi: color-mix(in srgb, var(--accent) 62%, #fff);
-        --dim: color-mix(in srgb, var(--text) 56%, var(--bg));
-        --line: rgba(255, 255, 255, 0.08);
-        --panel: rgba(10, 20, 15, 0.74);
-        --glow-a: rgba(200, 55, 45, 0.2);
-        --glow-b: rgba(47, 143, 91, 0.2);
+        --dim: color-mix(in srgb, var(--text) 62%, var(--bg));
+        --line: rgba(220, 182, 95, 0.16);
+        --panel: rgba(9, 22, 38, 0.72);
+        --lit: 255, 180, 94;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
       }
-      html[data-theme="regular"] {
-        --bg: #08090b;
-        --panel: rgba(255, 255, 255, 0.035);
-        --glow-a: rgba(201, 85, 60, 0.17);
-        --glow-b: rgba(201, 85, 60, 0.07);
-      }
-      html.lights-on { --lights-h: 34px; }
 
       * { box-sizing: border-box; }
       [hidden] { display: none !important; }
 
-      html, body {
-        margin: 0;
-        padding: 0;
-        background: var(--bg);
-        color: var(--text);
+      html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+      body {
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        background: linear-gradient(180deg, var(--bg), var(--night)) fixed;
       }
-      body { min-height: 100vh; position: relative; overflow-x: hidden; }
 
-      /* background layers */
-      .layer { position: fixed; inset: 0; pointer-events: none; }
-      .corridor {
-        z-index: 0;
-        background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 130px);
-        -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, #000 20%, transparent 85%);
-        mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, #000 20%, transparent 85%);
-      }
+      /* background: one warm glow, soft edges, snow */
       .glow {
         position: fixed;
-        top: -22%;
-        width: 700px;
-        height: 620px;
+        top: -14%;
+        left: 50%;
+        width: 900px;
+        max-width: 140vw;
+        height: 640px;
+        transform: translateX(-50%);
         z-index: 0;
         pointer-events: none;
-        animation: breathe 7s ease-in-out infinite;
+        background: radial-gradient(closest-side, rgba(var(--lit), 0.13), transparent 72%);
       }
-      .glow-a { left: 50%; margin-left: -640px; background: radial-gradient(closest-side, var(--glow-a), transparent 72%); }
-      .glow-b { left: 50%; margin-left: -60px; background: radial-gradient(closest-side, var(--glow-b), transparent 72%); animation-delay: -3.5s; }
-      @keyframes breathe { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
       .vignette {
+        position: fixed;
+        inset: 0;
         z-index: 0;
-        background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(0, 0, 0, 0.72) 100%);
-      }
-      #snow { z-index: 1; width: 100%; height: 100%; }
-
-      .lights {
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        height: 44px;
-        z-index: 40;
         pointer-events: none;
-        overflow: hidden;
+        background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(3, 9, 20, 0.5) 100%);
       }
-      .lights::before {
-        content: "";
-        position: absolute;
-        left: 0; right: 0;
-        top: 4px;
-        height: 2px;
-        background: #0e1a13;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-      .bulb {
-        position: absolute;
-        width: 12px;
-        height: 18px;
-        margin-left: -6px;
-        border-radius: 50% 50% 50% 50% / 38% 38% 62% 62%;
-        background: var(--c);
-        box-shadow: 0 0 10px 2px var(--c), 0 0 22px 4px color-mix(in srgb, var(--c) 45%, transparent);
-        animation: twinkle 2.4s ease-in-out infinite;
-      }
-      .bulb::before {
-        content: "";
-        position: absolute;
-        left: 2px; right: 2px;
-        top: -5px;
-        height: 6px;
-        border-radius: 2px 2px 0 0;
-        background: #1c2a22;
-      }
-      @keyframes twinkle { 0%, 100% { opacity: 1; } 45% { opacity: 0.35; } }
-
-      .snowbank {
-        position: fixed;
-        left: 0; right: 0; bottom: 0;
-        height: 64px;
-        z-index: 1;
-        pointer-events: none;
-      }
-      .snowbank svg { display: block; width: 100%; height: 100%; }
-      .snowbank .back { fill: #9fb0c4; opacity: 0.45; }
-      .snowbank .front { fill: #e8eef5; }
-
-      html:not(.lights-on) .lights { display: none; }
-      html:not(.snow-on) #snow, html:not(.snow-on) .snowbank { display: none; }
+      #snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
       /* boot screen */
       .boot {
@@ -143,7 +80,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: calc(var(--lights-h, 0px) + 14px) clamp(16px, 3vw, 32px) 14px;
+        padding: 14px clamp(16px, 3vw, 32px);
         border-bottom: 1px solid var(--line);
         background: color-mix(in srgb, var(--bg) 82%, transparent);
         backdrop-filter: blur(10px);
@@ -152,12 +89,12 @@
 
       .brand {
         font-family: 'Big Shoulders Display', sans-serif;
-        font-weight: 700;
-        font-size: 1.35rem;
+        font-weight: 800;
+        font-size: 1.4rem;
         letter-spacing: 0.02em;
         text-transform: uppercase;
         text-decoration: none;
-        color: var(--accent);
+        color: var(--text);
       }
 
       .acct { position: relative; }
@@ -176,7 +113,7 @@
         transition: border-color 0.2s ease, background 0.2s ease;
       }
       .acct-btn:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: rgba(255, 255, 255, 0.07); }
-      .acct-btn:focus-visible, .btn:focus-visible, .tab:focus-visible, .theme:focus-visible, .sw:focus-visible {
+      .acct-btn:focus-visible, .btn:focus-visible, .tab:focus-visible, .sw:focus-visible {
         outline: 2px solid var(--accent);
         outline-offset: 2px;
       }
@@ -196,13 +133,13 @@
 
       .menu {
         position: absolute;
-        left: 0;
+        right: 0;
         top: calc(100% + 8px);
-        min-width: 200px;
+        min-width: 210px;
         padding: 6px;
         border-radius: 10px;
         border: 1px solid var(--line);
-        background: color-mix(in srgb, var(--bg) 92%, #fff);
+        background: color-mix(in srgb, var(--bg) 90%, #fff);
         box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
         z-index: 20;
       }
@@ -233,13 +170,13 @@
         width: 100%;
         max-width: 1400px;
         margin: 0 auto;
-        padding: clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px) 110px;
+        padding: clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px) 48px;
       }
 
       .side {
         align-self: start;
         position: sticky;
-        top: calc(var(--lights-h, 0px) + 92px);
+        top: 88px;
         display: flex;
         flex-direction: column;
         gap: 2px;
@@ -289,7 +226,7 @@
         border-top: 2px solid var(--accent);
         background: var(--panel);
         backdrop-filter: blur(8px);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
       }
       .hero-title {
         font-family: 'Big Shoulders Display', sans-serif;
@@ -299,7 +236,7 @@
         letter-spacing: 0.01em;
         text-transform: uppercase;
         margin: 0 0 12px;
-        background: linear-gradient(180deg, var(--accent-hi), var(--accent) 60%, color-mix(in srgb, var(--accent) 70%, #000));
+        background: linear-gradient(180deg, var(--accent-hi), var(--accent) 60%, color-mix(in srgb, var(--accent) 75%, #000));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -315,16 +252,21 @@
         background: var(--panel);
         backdrop-filter: blur(8px);
       }
-      .card h3 { margin: 0 0 14px; font-size: 0.92rem; font-weight: 500; color: var(--dim); }
+      .card h3 { margin: 0 0 14px; font-size: 0.9rem; font-weight: 500; color: var(--dim); }
       .card .v { margin: 0; font-size: 1.15rem; font-weight: 600; overflow-wrap: anywhere; }
-      .card .s { margin: 4px 0 0; color: var(--dim); font-size: 0.9rem; }
-      .big { font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 3.4rem; line-height: 1; color: var(--accent-hi); }
-      .chip { display: inline-block; width: 14px; height: 14px; margin-right: 8px; border-radius: 50%; vertical-align: -2px; border: 1px solid rgba(255, 255, 255, 0.3); }
-      .card .btn { margin-top: 14px; }
+      .card .s { margin: 6px 0 0; color: var(--dim); font-size: 0.9rem; }
+      .big { margin: 0; font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 3.4rem; line-height: 1; color: var(--accent-hi); }
+      .chip { display: inline-block; width: 14px; height: 14px; margin: 0 6px 0 0; border-radius: 50%; vertical-align: -2px; border: 1px solid rgba(255, 255, 255, 0.3); }
+      .chip + .chip-gap { margin-left: 14px; }
+      .card .btn { margin-top: 16px; }
 
       .wip { text-align: center; padding: clamp(40px, 8vw, 80px) 24px; }
       .wip h2 { margin: 0 0 8px; font-family: 'Big Shoulders Display', sans-serif; font-weight: 700; font-size: 2.4rem; text-transform: uppercase; color: var(--accent); }
       .wip p { margin: 0 auto; max-width: 40ch; color: var(--dim); line-height: 1.6; }
+
+      /* snow drift, last thing on the page */
+      .drift { flex: none; height: 80px; pointer-events: none; }
+      .drift svg { display: block; width: 100%; height: 100%; }
 
       /* buttons */
       .btn {
@@ -344,7 +286,7 @@
       .btn-ghost { color: var(--text); border: 1px solid var(--line); background: rgba(255, 255, 255, 0.04); }
       .btn-ghost:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: rgba(255, 255, 255, 0.07); }
       .btn-primary { color: var(--accent-ink); background: var(--accent); border: 1px solid var(--accent); }
-      .btn-primary:hover { background: var(--accent-hi); transform: translateY(-1px); }
+      .btn-primary:hover { background: var(--accent-hi); border-color: var(--accent-hi); transform: translateY(-1px); }
 
       /* personalization dialog */
       .overlay {
@@ -354,12 +296,14 @@
         display: grid;
         place-items: center;
         padding: 20px;
-        background: rgba(3, 6, 4, 0.8);
+        background: rgba(3, 9, 20, 0.84);
         backdrop-filter: blur(6px);
       }
       .dialog {
+        position: relative;
+        z-index: 1;
         width: 100%;
-        max-width: 580px;
+        max-width: 560px;
         max-height: calc(100vh - 40px);
         overflow-y: auto;
         padding: clamp(22px, 4vw, 34px);
@@ -369,6 +313,28 @@
         background: color-mix(in srgb, var(--bg) 92%, #fff);
         box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
       }
+
+      /* a caged maintenance lamp hangs over the welcome step and flickers on once */
+      .lamp {
+        --sw: 72px;
+        --lamp-y: 64px;
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: min(640px, 100vw);
+        height: 72%;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+      .overlay[data-step="welcome"] .lamp { display: block; }
+      @media (max-height: 640px) { .overlay .lamp { display: none; } }
+      .cord { position: absolute; left: 50%; top: 0; width: 2px; height: var(--lamp-y); margin-left: -1px; background: #000; }
+      .shade { position: absolute; left: 50%; top: var(--lamp-y); width: var(--sw); height: calc(var(--sw) * .48); margin-left: calc(var(--sw) / -2); border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(180deg, #4a4e57, #1c1d21); }
+      .bulb { position: absolute; left: 50%; top: calc(var(--lamp-y) + var(--sw) * .48 - 4px); width: calc(var(--sw) * .5); height: 10px; margin-left: calc(var(--sw) / -4); border-radius: 50%; background: #ffdca4; box-shadow: 0 0 40px 14px rgba(var(--lit), .6); animation: flick 1.7s linear .3s backwards; }
+      .cone { position: absolute; inset: calc(var(--lamp-y) + var(--sw) * .48) 0 0 0; background: linear-gradient(180deg, rgba(var(--lit), .26), rgba(var(--lit), .02)); clip-path: polygon(calc(50% - var(--sw) / 4) 0, calc(50% + var(--sw) / 4) 0, 100% 100%, 0 100%); animation: flick 1.7s linear .3s backwards; }
+      @keyframes flick { 0%, 14% { opacity: 0; } 16% { opacity: .9; } 20% { opacity: .05; } 26% { opacity: 1; } 32% { opacity: .35; } 38%, 100% { opacity: 1; } }
+
       .welcome { text-align: center; padding: 10px 0 4px; }
       .wordmark {
         margin: 0 0 14px;
@@ -377,7 +343,7 @@
         font-size: clamp(3rem, 12vw, 4.4rem);
         line-height: 1;
         text-transform: uppercase;
-        background: linear-gradient(180deg, var(--accent-hi), var(--accent) 60%, color-mix(in srgb, var(--accent) 70%, #000));
+        background: linear-gradient(180deg, var(--accent-hi), var(--accent) 60%, color-mix(in srgb, var(--accent) 75%, #000));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -388,44 +354,6 @@
 
       fieldset { border: 0; margin: 0 0 22px; padding: 0; min-width: 0; }
       legend { padding: 0; margin: 0 0 10px; font-size: 0.92rem; font-weight: 600; }
-
-      .themes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .theme {
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.03);
-        color: var(--text);
-        font: inherit;
-        font-weight: 500;
-        text-align: left;
-        cursor: pointer;
-        transition: border-color 0.2s ease;
-      }
-      .theme:hover { border-color: rgba(255, 255, 255, 0.25); }
-      .theme[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-      .pv { position: relative; height: 66px; margin-bottom: 10px; border-radius: 6px; overflow: hidden; }
-      .pv-regular {
-        background:
-          radial-gradient(circle at 50% 0, rgba(201, 85, 60, 0.4), transparent 65%),
-          repeating-linear-gradient(90deg, rgba(255,255,255,0.09) 0, rgba(255,255,255,0.09) 1px, transparent 1px, transparent 18px),
-          #08090b;
-      }
-      .pv-christmas {
-        background:
-          radial-gradient(circle at 20% 0, rgba(200, 55, 45, 0.55), transparent 60%),
-          radial-gradient(circle at 85% 0, rgba(47, 143, 91, 0.55), transparent 60%),
-          #060d09;
-      }
-      .pv-christmas::after {
-        content: "";
-        position: absolute;
-        top: 8px; left: 10px;
-        width: 7px; height: 9px;
-        border-radius: 50%;
-        background: #c8372d;
-        box-shadow: 18px 3px 0 #e2b655, 36px 0 0 #2f8f5b, 54px 3px 0 #f2ede3, 72px 0 0 #c8372d, 90px 3px 0 #e2b655, 108px 0 0 #2f8f5b;
-      }
 
       .swatches { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
       .sw {
@@ -451,9 +379,6 @@
       .sw-custom input { position: absolute; inset: -8px; width: calc(100% + 16px); height: calc(100% + 16px); opacity: 0; cursor: pointer; }
       .sw-custom:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-      .toggle { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; cursor: pointer; }
-      .toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
-
       .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
 
       @media (max-width: 820px) {
@@ -462,7 +387,6 @@
         .tab { width: auto; flex: none; }
       }
       @media (max-width: 480px) {
-        .themes { grid-template-columns: 1fr; }
         .actions .btn { flex: 1; }
       }
 
@@ -473,23 +397,15 @@
     </style>
   </head>
   <body>
-    <div class="layer corridor" aria-hidden="true"></div>
-    <div class="glow glow-a" aria-hidden="true"></div>
-    <div class="glow glow-b" aria-hidden="true"></div>
-    <div class="layer vignette" aria-hidden="true"></div>
-    <canvas id="snow" class="layer" aria-hidden="true"></canvas>
-    <div class="lights" id="lights" aria-hidden="true"></div>
-    <div class="snowbank" aria-hidden="true">
-      <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
-        <path class="back" d="M0 42 C120 18 220 52 340 34 S560 12 700 36 S960 54 1080 30 S1180 22 1200 30 V80 H0 Z"/>
-        <path class="front" d="M0 58 C140 40 260 66 400 52 S640 36 780 56 S1040 70 1200 48 V80 H0 Z"/>
-      </svg>
-    </div>
+    <div class="glow" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <canvas id="snow" aria-hidden="true"></canvas>
 
     <div class="boot" id="boot" role="status">Checking your session…</div>
 
     <div class="app" id="app" hidden>
       <header class="topbar">
+        <a class="brand" href="/">Outpace</a>
         <div class="acct" id="acct">
           <button class="acct-btn" id="acct-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="acct-menu">
             <span class="avatar" id="avatar" aria-hidden="true"></span>
@@ -509,7 +425,6 @@
             </button>
           </div>
         </div>
-        <a class="brand" href="/">Outpace</a>
       </header>
 
       <div class="shell">
@@ -529,9 +444,9 @@
               </div>
               <div class="card">
                 <h3>Appearance</h3>
-                <p class="v" id="card-theme"></p>
-                <p class="s"><span class="chip" id="card-chip"></span><span id="card-chip-label">Accent color</span></p>
-                <button class="btn btn-ghost" id="card-change" type="button">Change appearance</button>
+                <p class="v">Your colors</p>
+                <p class="s"><span class="chip" id="chip-accent"></span>Accent<span class="chip chip-gap" id="chip-text"></span>Text</p>
+                <button class="btn btn-ghost" id="card-change" type="button">Change colors</button>
               </div>
               <div class="card">
                 <h3>Countdown</h3>
@@ -549,9 +464,14 @@
           </section>
         </main>
       </div>
+
+      <div class="drift" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 100 V44 Q140 14 280 40 T560 34 T840 44 T1120 30 T1440 40 V100Z" fill="#c9d8ee"/><path d="M0 100 V62 Q120 36 240 58 T480 54 T720 62 T960 50 T1200 60 T1440 52 V100Z" fill="#f4f8ff"/></svg>
+      </div>
     </div>
 
-    <div class="overlay" id="overlay" hidden>
+    <div class="overlay" id="overlay" data-step="custom" hidden>
+      <div class="lamp" aria-hidden="true"><div class="cone"></div><div class="cord"></div><div class="shade"></div><div class="bulb"></div></div>
       <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
         <div class="welcome" id="step-welcome">
           <p class="wordmark">Outpace</p>
@@ -561,20 +481,8 @@
         </div>
 
         <div id="step-custom" hidden>
-          <h2 id="custom-title">Personalize your dashboard</h2>
+          <h2 id="custom-title">Settings</h2>
           <p class="lead">Changes show up right away.</p>
-
-          <fieldset>
-            <legend>Theme</legend>
-            <div class="themes">
-              <button class="theme" type="button" data-theme-pick="regular" aria-pressed="false">
-                <div class="pv pv-regular"></div>Regular
-              </button>
-              <button class="theme" type="button" data-theme-pick="christmas" aria-pressed="false">
-                <div class="pv pv-christmas"></div>Christmas
-              </button>
-            </div>
-          </fieldset>
 
           <fieldset>
             <legend>Text color</legend>
@@ -584,12 +492,6 @@
           <fieldset>
             <legend>Accent color</legend>
             <div class="swatches" id="sw-accent"></div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Effects</legend>
-            <label class="toggle"><input type="checkbox" id="opt-snow"> Falling snow and snow drift</label>
-            <label class="toggle"><input type="checkbox" id="opt-lights"> String lights</label>
           </fieldset>
 
           <div class="actions">
@@ -614,20 +516,17 @@
           { id: 'wip5', label: 'WIP', icon: WIP_ICON }
         ];
 
-        var THEMES = {
-          regular:   { text: '#ece9e4', accent: '#c9553c', snow: false, lights: false },
-          christmas: { text: '#f2ede3', accent: '#e2b655', snow: true,  lights: true }
-        };
-        var THEME_NAMES = { regular: 'Regular', christmas: 'Christmas' };
+        var DEFAULTS = { text: '#eef3fa', accent: '#ffb45e' };
+        // Colors from the old dashboard that now map to the new defaults.
+        var LEGACY = { text: ['#f2ede3', '#ece9e4'], accent: ['#e2b655'] };
         var TEXT_COLORS = [
-          ['#f2ede3', 'Warm white'], ['#ffffff', 'White'], ['#f0cb74', 'Gold'],
+          ['#eef3fa', 'Snow white'], ['#ffffff', 'White'], ['#ffdca4', 'Warm gold'],
           ['#ffb4a8', 'Soft red'], ['#a8e6c1', 'Mint'], ['#b9d6ff', 'Ice blue']
         ];
         var ACCENT_COLORS = [
-          ['#e2b655', 'Gold'], ['#c9553c', 'Rust'], ['#c8372d', 'Red'],
-          ['#2f8f5b', 'Green'], ['#4f9bd9', 'Blue'], ['#b57edc', 'Purple']
+          ['#ffb45e', 'Amber'], ['#e0645a', 'Cranberry'], ['#3f9c70', 'Pine'],
+          ['#dcb65f', 'Gold'], ['#4f9bd9', 'Blue'], ['#b57edc', 'Purple']
         ];
-        var DEFAULT_THEME = 'christmas';
 
         var root = document.documentElement;
         var $ = function (id) { return document.getElementById(id); };
@@ -639,19 +538,14 @@
         var draft = null;
         var onboarding = false;
 
-        function themeDefaults(name) {
-          var t = THEMES[name];
-          return { theme: name, text: t.text, accent: t.accent, snow: t.snow, lights: t.lights };
+        function pick(value, key) {
+          if (typeof value !== 'string' || !HEX.test(value)) return DEFAULTS[key];
+          if (LEGACY[key].indexOf(value.toLowerCase()) !== -1) return DEFAULTS[key];
+          return value;
         }
-
         function clean(p) {
-          var base = themeDefaults(p && THEMES[p.theme] ? p.theme : DEFAULT_THEME);
-          if (!p) return base;
-          if (typeof p.text === 'string' && HEX.test(p.text)) base.text = p.text;
-          if (typeof p.accent === 'string' && HEX.test(p.accent)) base.accent = p.accent;
-          if (typeof p.snow === 'boolean') base.snow = p.snow;
-          if (typeof p.lights === 'boolean') base.lights = p.lights;
-          return base;
+          p = p || {};
+          return { text: pick(p.text, 'text'), accent: pick(p.accent, 'accent') };
         }
 
         function storageKey() { return 'outpace-admin:' + user.username.toLowerCase(); }
@@ -678,77 +572,50 @@
         }
 
         function apply(p) {
-          root.setAttribute('data-theme', p.theme);
           root.style.setProperty('--text', p.text);
           root.style.setProperty('--accent', p.accent);
           root.style.setProperty('--accent-ink', inkFor(p.accent));
-          root.classList.toggle('lights-on', p.lights);
-          root.classList.toggle('snow-on', p.snow);
-          setSnow(p.snow);
           if (user) renderAppearance(p);
         }
 
-        /* ---------- effects ---------- */
-        var strand = $('lights');
-        var bulbColors = ['#c8372d', '#e2b655', '#2f8f5b', '#f2ede3'];
-        function buildLights() {
-          strand.innerHTML = '';
-          var gap = 44;
-          var count = Math.ceil(window.innerWidth / gap) + 1;
-          for (var i = 0; i < count; i++) {
-            var bulb = document.createElement('span');
-            bulb.className = 'bulb';
-            bulb.style.left = (i * gap + 10) + 'px';
-            bulb.style.top = (8 + Math.abs(Math.sin(i * 0.55)) * 10) + 'px';
-            bulb.style.setProperty('--c', bulbColors[i % bulbColors.length]);
-            bulb.style.animationDelay = ((i * 7) % 5) * 0.45 + 's';
-            strand.appendChild(bulb);
-          }
-        }
-
+        /* ---------- snow ---------- */
         var canvas = $('snow');
         var ctx = canvas.getContext('2d');
         var flakes = [], w = 0, h = 0, raf = 0;
-        function sizeCanvas() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        function sizeCanvas() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 2);
+          w = canvas.width = window.innerWidth * dpr;
+          h = canvas.height = window.innerHeight * dpr;
+        }
         function makeFlake(anywhere) {
-          return { x: Math.random() * w, y: anywhere ? Math.random() * h : -10, r: 0.8 + Math.random() * 2.4,
-                   speed: 0.4 + Math.random() * 1.1, drift: Math.random() * Math.PI * 2, sway: 0.2 + Math.random() * 0.6 };
+          var dpr = Math.min(window.devicePixelRatio || 1, 2);
+          var r = (Math.random() * 2 + 0.6) * dpr;
+          return { x: Math.random() * w, y: anywhere ? Math.random() * h : -10, r: r,
+                   vy: (r / dpr * 0.3 + 0.3) * dpr, p: Math.random() * 6.28, a: Math.random() * 0.4 + 0.25, dpr: dpr };
         }
         function seedFlakes() {
-          var count = Math.min(140, Math.round(w / 11));
           flakes = [];
-          for (var i = 0; i < count; i++) flakes.push(makeFlake(true));
+          for (var i = 0; i < 90; i++) flakes.push(makeFlake(true));
         }
         function frame() {
           ctx.clearRect(0, 0, w, h);
           ctx.fillStyle = '#fff';
           for (var i = 0; i < flakes.length; i++) {
             var f = flakes[i];
-            f.y += f.speed;
-            f.drift += 0.012;
-            f.x += Math.sin(f.drift) * f.sway;
-            if (f.y > h + 10) flakes[i] = makeFlake(false);
-            ctx.globalAlpha = 0.35 + f.r / 4;
+            f.p += 0.012; f.y += f.vy; f.x += Math.sin(f.p) * 0.4 * f.dpr;
+            if (f.y > h + 10) { flakes[i] = makeFlake(false); continue; }
+            ctx.globalAlpha = f.a;
             ctx.beginPath();
             ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
             ctx.fill();
           }
           raf = requestAnimationFrame(frame);
         }
-        function setSnow(on) {
-          if (on && !reduce) {
-            if (!raf) { sizeCanvas(); seedFlakes(); raf = requestAnimationFrame(frame); }
-          } else if (raf) {
-            cancelAnimationFrame(raf);
-            raf = 0;
-            ctx.clearRect(0, 0, w, h);
-          }
+        function startSnow() {
+          if (reduce || raf) return;
+          sizeCanvas(); seedFlakes(); raf = requestAnimationFrame(frame);
         }
-        buildLights();
-        window.addEventListener('resize', function () {
-          buildLights();
-          if (raf) { sizeCanvas(); seedFlakes(); }
-        });
+        window.addEventListener('resize', function () { if (raf) { sizeCanvas(); seedFlakes(); } });
 
         /* ---------- tabs and views ---------- */
         var tabsEl = $('tabs');
@@ -789,8 +656,8 @@
         }
 
         function renderAppearance(p) {
-          $('card-theme').textContent = THEME_NAMES[p.theme] + ' theme';
-          $('card-chip').style.background = p.accent;
+          $('chip-accent').style.background = p.accent;
+          $('chip-text').style.background = p.text;
         }
 
         function renderHome() {
@@ -846,7 +713,6 @@
           input.setAttribute('aria-label', 'Custom ' + key + ' color');
           input.addEventListener('input', function () { draft[key] = input.value; apply(draft); syncCustom(); });
           wrap.appendChild(input);
-          wrap.dataset.custom = key;
           container.appendChild(wrap);
         }
         makeSwatches($('sw-text'), TEXT_COLORS, 'text');
@@ -863,38 +729,21 @@
           custom.classList.toggle('on', !matched);
           custom.querySelector('input').value = value;
         }
-
         function syncCustom() {
-          Array.prototype.forEach.call(document.querySelectorAll('[data-theme-pick]'), function (b) {
-            b.setAttribute('aria-pressed', String(b.dataset.themePick === draft.theme));
-          });
           syncSwatches($('sw-text'), draft.text);
           syncSwatches($('sw-accent'), draft.accent);
-          $('opt-snow').checked = draft.snow;
-          $('opt-lights').checked = draft.lights;
         }
 
-        Array.prototype.forEach.call(document.querySelectorAll('[data-theme-pick]'), function (b) {
-          b.addEventListener('click', function () {
-            draft = themeDefaults(b.dataset.themePick);
-            apply(draft);
-            syncCustom();
-          });
-        });
-        $('opt-snow').addEventListener('change', function (e) { draft.snow = e.target.checked; apply(draft); });
-        $('opt-lights').addEventListener('change', function (e) { draft.lights = e.target.checked; apply(draft); });
-
         function showStep(step) {
+          overlay.dataset.step = step;
           stepWelcome.hidden = step !== 'welcome';
           stepCustom.hidden = step !== 'custom';
-          if (step === 'welcome') $('continue').focus();
-          else {
-            syncCustom();
-            $('custom-title').textContent = onboarding ? 'Choose your look' : 'Settings';
-            $('custom-cancel').textContent = onboarding ? 'Back' : 'Cancel';
-            $('custom-save').textContent = onboarding ? 'Save and start' : 'Save changes';
-            $('custom-save').focus();
-          }
+          if (step === 'welcome') { $('continue').focus(); return; }
+          syncCustom();
+          $('custom-title').textContent = onboarding ? 'Choose your colors' : 'Settings';
+          $('custom-cancel').textContent = onboarding ? 'Back' : 'Cancel';
+          $('custom-save').textContent = onboarding ? 'Save and start' : 'Save changes';
+          $('custom-save').focus();
         }
 
         function openDialog(isOnboarding) {
@@ -933,12 +782,13 @@
           renderHome();
 
           var saved = loadSaved();
-          prefs = saved || themeDefaults(DEFAULT_THEME);
+          prefs = saved || clean(DEFAULTS);
           apply(prefs);
           selectTab(location.hash.slice(1));
 
           $('boot').hidden = true;
           $('app').hidden = false;
+          startSnow();
           if (!saved) openDialog(true);
         }
 

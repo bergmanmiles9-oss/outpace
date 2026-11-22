@@ -15,6 +15,8 @@
     <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
+    <!-- CHRISTMAS SWITCH: remove 'xmas' below to turn the festive theme off -->
+    <script>document.documentElement.classList.add('xmas');</script>
     <style>
       :root {
         --bg: #08090b;
@@ -23,8 +25,34 @@
         --text-dim: #94979d;
         --accent: #c9553c;
         --accent-ink: #180a06;
+        --accent-hot: #d76a4f;
+        --lit: 201, 85, 60;
+        --warn: #c9553c;
+        --warn-rgb: 201, 85, 60;
+        --nav-rgb: 8, 9, 11;
+        --gold: #c9a24f;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
       }
+
+      /* Christmas theme: colors change here, extra decorations are .xmas-only */
+      html.xmas {
+        --bg: #07111f;
+        --text: #eef3fa;
+        --text-dim: #9db0c7;
+        --accent: #ffb45e;
+        --accent-hot: #ffdca4;
+        --accent-ink: #1a0d05;
+        --lit: 255, 180, 94;
+        --warn: #e0645a;
+        --warn-rgb: 224, 100, 90;
+        --nav-rgb: 7, 17, 31;
+        --gold: #dcb65f;
+        --line: rgba(220, 182, 95, 0.18);
+      }
+      html.xmas body { background: linear-gradient(180deg, #07111f, #0d2031) fixed; }
+      html.xmas .corridor, html.xmas .sweep { display: none; }
+      html.xmas .vignette { background: radial-gradient(ellipse 90% 60% at 50% 0%, transparent 55%, rgba(3, 9, 20, 0.5) 100%); }
+      html:not(.xmas) .xmas-only { display: none !important; }
 
       * { box-sizing: border-box; }
 
@@ -34,6 +62,8 @@
         background: var(--bg);
         color: var(--text);
       }
+
+      html { scroll-behavior: smooth; }
 
       body { min-height: 100vh; position: relative; }
 
@@ -56,7 +86,7 @@
         transform: translateX(-50%);
         width: 780px;
         height: 560px;
-        background: radial-gradient(closest-side, rgba(201, 85, 60, 0.13), transparent 72%);
+        background: radial-gradient(closest-side, rgba(var(--lit), 0.13), transparent 72%);
         z-index: 0;
         pointer-events: none;
         animation: breathe 7s ease-in-out infinite;
@@ -96,7 +126,7 @@
         justify-content: space-between;
         padding: 22px clamp(20px, 5vw, 56px);
         backdrop-filter: blur(10px);
-        background: linear-gradient(to bottom, rgba(8,9,11,0.92), rgba(8,9,11,0.75));
+        background: linear-gradient(to bottom, rgba(var(--nav-rgb), 0.92), rgba(var(--nav-rgb), 0.75));
         border-bottom: 1px solid var(--line);
       }
 
@@ -139,7 +169,7 @@
         background: var(--accent);
         border: 1px solid var(--accent);
       }
-      .btn-primary:hover { background: #d76a4f; transform: translateY(-1px); }
+      .btn-primary:hover { background: var(--accent-hot); transform: translateY(-1px); }
 
       main {
         position: relative;
@@ -166,30 +196,70 @@
         text-transform: uppercase;
         letter-spacing: 0.01em;
         line-height: 1;
+        margin: 0 0 14px;
+      }
+
+      .updated {
         margin: 0 0 28px;
+        font-size: 0.85rem;
+        color: var(--text-dim);
       }
 
       .warning {
         display: flex;
         gap: 12px;
         align-items: flex-start;
-        border: 1px solid rgba(201, 85, 60, 0.35);
-        border-left: 3px solid var(--accent);
-        background: rgba(201, 85, 60, 0.08);
+        border: 1px solid rgba(var(--warn-rgb), 0.35);
+        border-left: 3px solid var(--warn);
+        background: rgba(var(--warn-rgb), 0.08);
         border-radius: 6px;
         padding: 16px 18px;
         font-size: 0.95rem;
         line-height: 1.55;
         color: var(--text);
-        margin-bottom: 44px;
+        margin-bottom: 28px;
       }
 
-      .warning svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+      .warning svg { flex-shrink: 0; margin-top: 2px; color: var(--warn); }
+
+      /* contents list, built by the script at the bottom from the section headings */
+      .toc {
+        margin-bottom: 44px;
+        padding: 18px 20px 20px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+
+      .toc-title {
+        margin: 0 0 12px;
+        font-family: 'Big Shoulders Display', sans-serif;
+        font-weight: 600;
+        font-size: 1.15rem;
+      }
+
+      .toc ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        columns: 2 240px;
+        column-gap: 28px;
+      }
+
+      .toc li { break-inside: avoid; padding: 3px 0; }
+
+      .toc a {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        color: var(--text-dim);
+        text-decoration: none;
+      }
+      .toc a:hover, .toc a:focus-visible { color: var(--text); }
 
       .section {
         padding-top: 32px;
         margin-top: 32px;
         border-top: 1px solid var(--line);
+        scroll-margin-top: 90px;
       }
 
       .section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
@@ -210,6 +280,8 @@
         margin: 0 0 14px;
         max-width: 66ch;
       }
+
+      .section a { color: var(--text); text-underline-offset: 3px; }
 
       .section ul {
         margin: 0 0 4px;
@@ -259,6 +331,33 @@
         opacity: 0.55;
       }
 
+      /* festive extras */
+      html.xmas .section a { color: var(--gold); }
+      html.xmas .toc a:hover, html.xmas .toc a:focus-visible { color: var(--gold); }
+      html.xmas .section li:nth-child(3n+1)::before { background: #d9453f; }
+      html.xmas .section li:nth-child(3n+2)::before { background: #dcb65f; }
+      html.xmas .section li:nth-child(3n)::before { background: #3f9c70; }
+
+      #snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+      /* a caged maintenance lamp hangs beside the text and flickers on once */
+      .lamp { display: none; }
+      @media (min-width: 1100px) {
+        html.xmas .lamp {
+          --sw: 72px; --lamp-y: 120px;
+          display: block; position: absolute; top: 0; right: 3vw; width: clamp(200px, 24vw, 360px); height: 70vh;
+          z-index: 1; pointer-events: none;
+        }
+      }
+      .cord { position: absolute; left: 50%; top: 0; width: 2px; height: var(--lamp-y); margin-left: -1px; background: #000; }
+      .shade { position: absolute; left: 50%; top: var(--lamp-y); width: var(--sw); height: calc(var(--sw) * .48); margin-left: calc(var(--sw) / -2); border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(180deg, #4a4e57, #1c1d21); }
+      .bulb { position: absolute; left: 50%; top: calc(var(--lamp-y) + var(--sw) * .48 - 4px); width: calc(var(--sw) * .5); height: 10px; margin-left: calc(var(--sw) / -4); border-radius: 50%; background: var(--accent-hot); box-shadow: 0 0 40px 14px rgba(var(--lit), .6); animation: flick 1.7s linear .4s backwards; }
+      .cone { position: absolute; inset: calc(var(--lamp-y) + var(--sw) * .48) 0 0 0; background: linear-gradient(180deg, rgba(var(--lit), .3), rgba(var(--lit), .02)); clip-path: polygon(calc(50% - var(--sw) / 4) 0, calc(50% + var(--sw) / 4) 0, 100% 100%, 0 100%); animation: flick 1.7s linear .4s backwards; }
+      @keyframes flick { 0%, 14% { opacity: 0; } 16% { opacity: .9; } 20% { opacity: .05; } 26% { opacity: 1; } 32% { opacity: .35; } 38%, 100% { opacity: 1; } }
+
+      .drift { position: relative; z-index: 2; height: 100px; margin-top: 40px; pointer-events: none; }
+      .drift svg { display: block; width: 100%; height: 100%; }
+
       @media (max-width: 560px) {
         .nav-links { gap: 6px; }
         .btn { padding: 8px 12px; font-size: 0.82rem; }
@@ -266,9 +365,12 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
         .doc { animation: none; opacity: 1; transform: none; }
         .glow { animation: none; opacity: 0.85; }
         .sweep { display: none; }
+        .bulb, .cone { animation: none; }
+        #snow { display: none; }
       }
     </style>
   </head>
@@ -277,6 +379,8 @@
     <div class="glow" aria-hidden="true"></div>
     <div class="vignette" aria-hidden="true"></div>
     <div class="sweep" aria-hidden="true"></div>
+    <canvas id="snow" class="xmas-only" aria-hidden="true"></canvas>
+    <div class="lamp xmas-only" aria-hidden="true"><div class="cone"></div><div class="cord"></div><div class="shade"></div><div class="bulb"></div></div>
 
     <nav class="nav">
       <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
@@ -289,6 +393,7 @@
     <main>
       <div class="doc">
         <h1>Terms of Service</h1>
+        <p class="updated">Last updated November 22, 2026</p>
 
         <div class="warning">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -297,6 +402,11 @@
             <circle cx="12" cy="17.3" r="1" fill="currentColor"/>
           </svg>
           <span>Failure to comply with our ToS, especially when applying for staff, will get your chances of acceptance to 0%.</span>
+        </div>
+
+        <div class="toc" id="toc" hidden>
+          <p class="toc-title">Contents</p>
+          <ul id="toc-list"></ul>
         </div>
 
         <div class="section">
@@ -389,7 +499,474 @@
         </div>
 
         <div class="section">
-          <h2>7. Changes to the Terms of Service</h2>
+          <h2>7. Eligibility and Platform Rules</h2>
+          <p>Outpace is built on Roblox and run with a Discord community, so the rules of those platforms apply on top of ours.</p>
+          <ul>
+            <li>
+              <strong>Platform Terms:</strong>
+              You must follow the Roblox Terms of Use and Community Standards, and the Discord Terms of Service and Community Guidelines, whenever you use Outpace.
+            </li>
+            <li>
+              <strong>Age Requirements:</strong>
+              You must meet the minimum age of each platform you use to take part. If you are under that age, you may not use our game, Discord server, or website.
+            </li>
+            <li>
+              <strong>Your Own Accounts:</strong>
+              Only use accounts that belong to you. Using someone else’s account, or letting someone else use yours, can get both accounts punished.
+            </li>
+            <li>
+              <strong>Platform Punishments:</strong>
+              If Roblox or Discord bans or moderates you for something that happened in connection with Outpace, we may also remove you from Outpace.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>8. Fair Play in the Game</h2>
+          <p>Outpace is meant to be a tense, fair experience for everyone in the server. On top of the rules in Section 1, the following are not allowed:</p>
+          <ul>
+            <li>
+              <strong>Griefing and Trolling:</strong>
+              Deliberately ruining other players’ runs, including blocking paths or doorways, trapping or body-blocking teammates, or leading threats toward other players on purpose.
+            </li>
+            <li>
+              <strong>Server Disruption:</strong>
+              Trying to crash, lag, flood, or overload a server, or abusing game remotes, prompts, or physics to disrupt other players.
+            </li>
+            <li>
+              <strong>Bug Abuse:</strong>
+              Repeatedly using a glitch, map hole, or broken mechanic to skip content, avoid threats, or gain rewards instead of reporting it.
+            </li>
+            <li>
+              <strong>Teleporting and Speed Hacks:</strong>
+              Using any tool, script, or injected software to move, fly, noclip, or change your speed beyond what the game allows.
+            </li>
+            <li>
+              <strong>Leaving to Dodge Consequences:</strong>
+              Repeatedly leaving a run on purpose to avoid losing, being caught, or paying a cost, or to ruin a run for others.
+            </li>
+            <li>
+              <strong>Boosting and Alt Accounts:</strong>
+              Using alt accounts to help your main account, farm rewards, or manipulate a server is prohibited.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>9. Chat and Communication</h2>
+          <p>These rules apply to in-game chat, usernames, display names, voice or text chat, and messages on our website.</p>
+          <ul>
+            <li>
+              <strong>Spam:</strong>
+              Do not repeat messages, flood chat, use excessive capital letters, or spam symbols or emojis.
+            </li>
+            <li>
+              <strong>Filter Bypassing:</strong>
+              Do not try to get around the Roblox chat filter or our own filters, including with spaces, symbols, or coded words.
+            </li>
+            <li>
+              <strong>Personal Information:</strong>
+              Do not share your own or anyone else’s private details, such as addresses, phone numbers, passwords, or real names. Doxxing is a permanent ban.
+            </li>
+            <li>
+              <strong>Inappropriate Content:</strong>
+              No sexual, hateful, or extremely graphic content, and no usernames, avatars, or display names that break these rules.
+            </li>
+            <li>
+              <strong>Advertising:</strong>
+              Do not promote other games, servers, groups, trades, or social accounts without staff permission.
+            </li>
+            <li>
+              <strong>Scams and Malicious Links:</strong>
+              Posting phishing links, fake giveaways, “free Robux” offers, or anything meant to steal accounts or items results in an immediate permanent ban.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>10. Discord Community Rules</h2>
+          <p>Our Discord server is part of Outpace, and everything in these Terms applies there too.</p>
+          <ul>
+            <li>
+              <strong>Use the Right Channels:</strong>
+              Keep messages in the channel made for them, and follow any rules written in a channel’s description or pinned messages.
+            </li>
+            <li>
+              <strong>Pings:</strong>
+              Do not mass-ping, ping staff without a real reason, or reply-ping people who have asked you to stop.
+            </li>
+            <li>
+              <strong>Raids and Spam:</strong>
+              Joining the server to flood channels, spam members, or coordinate attacks on the server is a permanent ban.
+            </li>
+            <li>
+              <strong>Direct Messages:</strong>
+              Do not send unwanted, harassing, or advertising messages to other members. Staff will never ask for your password.
+            </li>
+            <li>
+              <strong>Roles:</strong>
+              Optional roles, such as announcement and event roles, can be taken or dropped at any time. Do not try to give yourself roles you were not offered.
+            </li>
+            <li>
+              <strong>Staff Decisions:</strong>
+              Do not argue with a punishment in public channels. Use the appeal process in Section 19 instead.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>11. Outpesos (In-Game Currency)</h2>
+          <p>Outpesos are the in-game currency of Outpace. They exist only inside the game.</p>
+          <ul>
+            <li>
+              <strong>No Real-World Value:</strong>
+              Outpesos have no cash value, cannot be exchanged for money, and are not your property.
+            </li>
+            <li>
+              <strong>No Trading or Selling:</strong>
+              You may not sell, trade, or give away Outpesos, items, or accounts for real money, Robux, or anything of value outside the game.
+            </li>
+            <li>
+              <strong>Earn Them Fairly:</strong>
+              Outpesos must be earned through normal gameplay or rewards we offer. Botting, macros, auto-clickers, scripts, and duplication glitches will lead to removed balances and a ban.
+            </li>
+            <li>
+              <strong>Changes and Resets:</strong>
+              We may change prices, rewards, and balances, or reset or remove Outpesos at any time, including during updates, bug fixes, or wipes.
+            </li>
+            <li>
+              <strong>Bans:</strong>
+              If you are banned, you lose access to your Outpesos and anything you bought with them.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>12. Donations and Purchases</h2>
+          <p>Outpace may offer optional purchases for Robux, including donations and Outpeso products. All of them are optional.</p>
+          <ul>
+            <li>
+              <strong>Processed by Roblox:</strong>
+              Payments, receipts, and refund requests are handled by Roblox under Roblox’s own policies. We generally cannot reverse or refund Robux transactions ourselves.
+            </li>
+            <li>
+              <strong>Donations Are Voluntary:</strong>
+              Donating does not buy a staff position, protection from punishment, or an exception to any rule.
+            </li>
+            <li>
+              <strong>Purchases Stay With the Account:</strong>
+              Items and Outpesos are tied to the account that bought them and cannot be moved to another account.
+            </li>
+            <li>
+              <strong>Fraud and Chargebacks:</strong>
+              Buying with a stolen or unauthorized payment method, or reversing a payment to keep what you bought, results in removal and the loss of everything attached to the purchase.
+            </li>
+            <li>
+              <strong>Permission:</strong>
+              If you are a minor, make sure a parent or guardian allows you to spend Robux.
+            </li>
+            <li>
+              <strong>Changes:</strong>
+              Prices, products, and rewards may change or be removed at any time.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>13. Unreleased Content and Leaks</h2>
+          <p>Outpace is still in development. Early builds, test places, models, scripts, trailers, and plans are unfinished and may change at any time.</p>
+          <ul>
+            <li>
+              <strong>Do Not Leak:</strong>
+              Do not share, screenshot, record, or describe unreleased content, test builds, or staff-only material anywhere unless staff have clearly said you can.
+            </li>
+            <li>
+              <strong>Test Access:</strong>
+              Access to tests and early builds is a privilege and can be removed at any time, without notice.
+            </li>
+            <li>
+              <strong>Nothing Is Final:</strong>
+              Anything shown early can be changed, delayed, or cut. Release dates and plans are goals, not promises.
+            </li>
+            <li>
+              <strong>Gameplay Videos:</strong>
+              You may record and stream released gameplay unless staff say otherwise for a specific update. Keep your content within these Terms.
+            </li>
+            <li>
+              <strong>Consequences:</strong>
+              Leaking leads to a permanent ban and removal from any staff or testing role, and may be reported to the platforms involved.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>14. Bug and Exploit Reports</h2>
+          <p>We want to hear about problems. Reporting them the right way helps everyone.</p>
+          <ul>
+            <li>
+              <strong>Report Privately:</strong>
+              Send bugs and exploits to staff through our Discord. Do not post exploit details in public channels or in game chat.
+            </li>
+            <li>
+              <strong>Good-Faith Reports:</strong>
+              If you report an exploit quickly and did not take advantage of it, we will not punish you for finding it.
+            </li>
+            <li>
+              <strong>Do Not Profit:</strong>
+              Anything you gained by using an exploit may be removed, and you may not sell, share, or spread it.
+            </li>
+            <li>
+              <strong>Include Details:</strong>
+              Tell us what happened, where, and how to repeat it. Screenshots and recordings help a lot.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>15. Staff Responsibilities</h2>
+          <p>Staff are held to a higher standard than regular members. In addition to Section 2, all staff agree to the following:</p>
+          <ul>
+            <li>
+              <strong>Professionalism:</strong>
+              Treat players and other staff with respect, in public and in private, and represent Outpace well.
+            </li>
+            <li>
+              <strong>No Abuse of Permissions:</strong>
+              Do not use staff tools, commands, or access for personal gain, to target players, or to give friends an advantage.
+            </li>
+            <li>
+              <strong>Follow the Process:</strong>
+              Major actions, such as permanent bans, must follow the process set by management.
+            </li>
+            <li>
+              <strong>Stay Active:</strong>
+              Staff are expected to stay reasonably active and to let management know when they will be away. Long inactivity may lead to removal.
+            </li>
+            <li>
+              <strong>Removal:</strong>
+              Staff can be demoted or removed at any time. When your role ends, your access ends, and your confidentiality duties continue.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>16. Staff Accounts and Website Access</h2>
+          <p>Some staff get accounts for Outpace website tools. These accounts come with extra trust.</p>
+          <ul>
+            <li>
+              <strong>Personal Access:</strong>
+              A staff login belongs to one person. Never share your login, session, or password with anyone, including other staff.
+            </li>
+            <li>
+              <strong>Logging:</strong>
+              Logins and actions taken in staff tools may be logged and reviewed by management.
+            </li>
+            <li>
+              <strong>Report Problems:</strong>
+              If you think your login was exposed or misused, tell management right away.
+            </li>
+            <li>
+              <strong>Misuse:</strong>
+              Using staff tools to access data you do not need, change records without approval, or harm the website or game leads to removal and a permanent ban.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>17. Privacy and Data</h2>
+          <p>We collect only what we need to run Outpace, keep it safe, and review staff applications.</p>
+          <ul>
+            <li>
+              <strong>What We Collect:</strong>
+              Your IP address (see the top of this page), your Roblox and Discord usernames or IDs, the answers in your staff application, and moderation records such as warnings and bans.
+            </li>
+            <li>
+              <strong>Why We Collect It:</strong>
+              To moderate the game and community, spot ban evasion, keep our systems secure, and decide on applications.
+            </li>
+            <li>
+              <strong>We Do Not Sell It:</strong>
+              We do not sell your data. It is only shared with services we use to run Outpace, such as hosting and authentication, or when the law requires it.
+            </li>
+            <li>
+              <strong>Analytics:</strong>
+              This website may use analytics to understand how it is used.
+            </li>
+            <li>
+              <strong>How Long We Keep It:</strong>
+              We keep data for as long as we need it for moderation, security, and our records.
+            </li>
+            <li>
+              <strong>Your Requests:</strong>
+              You can ask staff on Discord to review or delete your data. We may keep records needed to enforce a ban.
+            </li>
+            <li>
+              <strong>Security:</strong>
+              We take reasonable steps to protect your data, but no system is perfectly secure.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>18. Moderation and Punishments</h2>
+          <p>Staff use their judgment, and we enforce the spirit of the rules, not only the exact wording.</p>
+          <ul>
+            <li>
+              <strong>Types of Action:</strong>
+              Depending on the situation, we may issue a warning, mute, kick, temporary ban, or permanent ban. We may skip steps for serious violations.
+            </li>
+            <li>
+              <strong>Zero Tolerance:</strong>
+              Hate speech, threats, doxxing, sexual content, scams, hacking, leaking, and ban evasion can lead to an immediate permanent ban. Serious cases may be reported to Roblox, Discord, or the authorities.
+            </li>
+            <li>
+              <strong>Evidence:</strong>
+              We may rely on screenshots, recordings, chat logs, and our own records when deciding.
+            </li>
+            <li>
+              <strong>No Loopholes:</strong>
+              Finding a gap in the wording of a rule is not a defense. If it is clearly against the spirit of the rules, it can be punished.
+            </li>
+            <li>
+              <strong>Discretion:</strong>
+              Staff decide each case on its own facts, so two similar cases may not end the same way.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>19. Appeals</h2>
+          <p>If you think a punishment was a mistake, you may appeal it.</p>
+          <ul>
+            <li>
+              <strong>How to Appeal:</strong>
+              Use the appeal method listed in our Discord server. Include your username, what happened, and why the decision should be reconsidered.
+            </li>
+            <li>
+              <strong>One Appeal Each:</strong>
+              You get one appeal per punishment. Sending repeated appeals can make your punishment longer.
+            </li>
+            <li>
+              <strong>Not Appealable:</strong>
+              Permanent bans for severe violations, ban evasion, and leaking may not be appealable.
+            </li>
+            <li>
+              <strong>Final Decisions:</strong>
+              The decision on an appeal is final.
+            </li>
+            <li>
+              <strong>Be Respectful:</strong>
+              Harassing or threatening staff over a punishment will make things worse.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>20. Reporting Violations</h2>
+          <p>If you see someone breaking these Terms, tell staff.</p>
+          <ul>
+            <li>
+              <strong>How to Report:</strong>
+              Message staff through our Discord with the player’s username and any evidence you have, such as a screenshot or recording.
+            </li>
+            <li>
+              <strong>False Reports:</strong>
+              Making up reports, or reporting repeatedly to harass someone, is itself a violation.
+            </li>
+            <li>
+              <strong>Do Not Take Matters Into Your Own Hands:</strong>
+              Let staff handle it. Retaliating against or exposing another player is not allowed.
+            </li>
+            <li>
+              <strong>Privacy:</strong>
+              We make reasonable efforts to keep reports private, but we cannot guarantee it.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>21. Intellectual Property</h2>
+          <p>
+            Outpace, including its name, logos, game, website, models, scripts, music, sound, and artwork, belongs to Outpace and its creators,
+            except for anything owned by third parties, which stays under its original license.
+          </p>
+          <ul>
+            <li>
+              <strong>No Copying:</strong>
+              Do not copy, reupload, redistribute, or sell Outpace models, scripts, maps, audio, or art, and do not build a copy of the game or use our name to mislead people.
+            </li>
+            <li>
+              <strong>Fan Content:</strong>
+              Fan art, videos, and edits are welcome if they credit Outpace and do not suggest that staff made or endorsed them, unless staff approve it.
+            </li>
+            <li>
+              <strong>Commercial Use:</strong>
+              You may not use Outpace assets to make money without written permission from staff.
+            </li>
+            <li>
+              <strong>Copyright Concerns:</strong>
+              If you believe something on our website or in our game uses your work without permission, contact staff on Discord and we will look into it.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>22. Third-Party Services and Links</h2>
+          <p>
+            Outpace relies on services we do not control, such as Roblox, Discord, and our hosting and authentication providers.
+            Their own terms apply when you use them.
+          </p>
+          <ul>
+            <li>We are not responsible for the content, safety, or policies of third-party websites, and a link to one is not an endorsement.</li>
+            <li>Only trust links on out-pace.org and in our official Discord server. If someone claims to be Outpace staff and sends a link anywhere else, do not click it and report it.</li>
+            <li>If a third-party service goes down or changes, parts of Outpace may stop working until it is fixed.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>23. Limitation of Liability</h2>
+          <p>
+            To the fullest extent permitted by law, Outpace, its owners, developers, and staff are not liable for any indirect, incidental, or consequential damages
+            that come from using our game, website, or Discord server.
+          </p>
+          <ul>
+            <li>This includes lost progress, Outpesos, items, or data, downtime, bans, actions by other players, and the actions of third-party services.</li>
+            <li>Some places do not allow certain limits, so these limits apply only as far as the law allows.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>24. General Provisions</h2>
+          <ul>
+            <li>
+              <strong>Severability:</strong>
+              If any part of these Terms cannot be enforced, the rest still applies.
+            </li>
+            <li>
+              <strong>No Waiver:</strong>
+              If we do not enforce a rule once, we have not given up the right to enforce it later.
+            </li>
+            <li>
+              <strong>Whole Agreement:</strong>
+              These Terms, together with the platform terms mentioned in Section 7, are the full agreement between you and Outpace about our game, website, and community.
+            </li>
+            <li>
+              <strong>Extra Rules:</strong>
+              Rules posted in our Discord server or in the game can add to these Terms. If there is a conflict, the stricter rule applies.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>25. Contact Us</h2>
+          <p>
+            For questions about these Terms, appeals, reports, or data requests, reach staff through our
+            <a href="https://discord.gg/ZzWwDURXhG" target="_blank" rel="noopener">Discord server</a>.
+          </p>
+        </div>
+
+        <div class="section">
+          <h2>26. Changes to the Terms of Service</h2>
           <p>
             We reserve the right to update or modify these Terms at any time.
             Continued use of our website or services following any changes constitutes your acceptance of the new Terms of Service.
@@ -405,8 +982,49 @@
 
     <p id="load">Firebase SDK Loading&hellip;</p>
 
+    <div class="drift xmas-only" aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 100 V44 Q140 14 280 40 T560 34 T840 44 T1120 30 T1440 40 V100Z" fill="#c9d8ee"/><path d="M0 100 V62 Q120 36 240 58 T480 54 T720 62 T960 50 T1200 60 T1440 52 V100Z" fill="#f4f8ff"/></svg></div>
+
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+        // contents list, built from the section headings
+        var toc = document.getElementById('toc');
+        var list = document.getElementById('toc-list');
+        document.querySelectorAll('.section h2').forEach(function (h, i) {
+          var id = 'section-' + i;
+          h.parentNode.id = id;
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = '#' + id;
+          a.textContent = h.textContent;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+        toc.hidden = false;
+
+        // snow
+        var cv = document.getElementById('snow');
+        var xmas = document.documentElement.classList.contains('xmas');
+        var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (xmas && !calm && cv.getContext) {
+          var c = cv.getContext('2d'), w, h, dpr, fl = [];
+          var size = function () { dpr = Math.min(window.devicePixelRatio || 1, 2); w = cv.width = innerWidth * dpr; h = cv.height = innerHeight * dpr; };
+          var mk = function (top) {
+            var r = (Math.random() * 2 + .6) * dpr;
+            return { x: Math.random() * w, y: top ? -10 : Math.random() * h, r: r, vy: (r / dpr * .3 + .3) * dpr, p: Math.random() * 6.28, a: Math.random() * .4 + .25 };
+          };
+          size(); for (var i = 0; i < 90; i++) fl.push(mk(false));
+          addEventListener('resize', size);
+          (function draw() {
+            c.clearRect(0, 0, w, h); c.fillStyle = '#fff';
+            for (var j = 0; j < fl.length; j++) {
+              var f = fl[j]; f.p += .012; f.y += f.vy; f.x += Math.sin(f.p) * .4 * dpr;
+              if (f.y > h + 10) { fl[j] = mk(true); continue; }
+              c.globalAlpha = f.a; c.beginPath(); c.arc(f.x, f.y, f.r, 0, 6.283); c.fill();
+            }
+            requestAnimationFrame(draw);
+          })();
+        }
+
         var loadEl = document.getElementById('load');
         try {
           var app = firebase.app();

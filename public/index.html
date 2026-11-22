@@ -4,430 +4,141 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Outpace</title>
-<meta name="description" content="Outpace — outrun what's behind the door.">
+<meta name="description" content="Outpace — escape the maintenance halls before the worker finds you.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- CHRISTMAS SWITCH: remove 'xmas' below to turn the whole Christmas theme off -->
-<script>document.documentElement.classList.add('js', 'xmas');</script>
+<script>document.documentElement.classList.add('xmas');</script>
 <style>
 :root {
-  --bg: #08090b;
-  --line: rgba(255,255,255,0.055);
-  --text: #ece9e4;
-  --text-dim: #85888e;
-  --accent: #c9553c;
-  --accent-hot: #e8845f;
-  --accent-ink: #180a06;
-  --ring: var(--accent);
-  --lit: 232,132,95;
-  --mx: 50%; --my: 38%;
-  --px: 0; --py: 0;
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  --ink: #08090b; --night: #121316;
+  --text: #ece9e4; --dim: #9096a0;
+  --light: #e8845f; --light-hot: #ffb48c; --lit: 232,132,95;
+  --accent-ink: #1a0d05; --gold: #c9a24f;
+  --line: rgba(255,255,255,.14);
+  --pad: clamp(20px, 5vw, 64px);
+  --rx: clamp(24px, 9vw, 140px);
+  --floor-h: clamp(250px, 36vh, 340px);
+  --lamp-y: clamp(70px, 16vh, 170px);
 }
-
-/* ===== CHRISTMAS THEME: everything festive lives in this block and in .xmas-only elements ===== */
+/* Christmas theme: only colors change here; extra decorations are .xmas-only */
 html.xmas {
-  --accent: #b83a36;
-  --accent-hot: #e0645a;
-  --accent-ink: #fff4ec;
+  --ink: #07111f; --night: #0d2031;
+  --text: #eef3fa; --dim: #9db0c7;
+  --light: #ffb45e; --light-hot: #ffdca4; --lit: 255,180,94;
   --gold: #dcb65f;
-  --pine: #2f7a58;
-  --ring: var(--gold);
-  --lit: 224,100,90;
+  --line: rgba(220,182,95,.22);
 }
 html:not(.xmas) .xmas-only { display: none !important; }
-html.xmas #dust { z-index: 6; }
-html.xmas .btn-primary:hover { box-shadow: 0 8px 30px rgba(184,58,54,.4), 0 0 0 1px rgba(220,182,95,.45); }
-html.xmas .btn-ghost:hover { border-color: rgba(220,182,95,.55); }
-html.xmas .member:hover::after { background: var(--gold); }
-html.xmas .member:hover .m-name { color: var(--gold); }
-html.xmas .landing-title::after { color: #6fbf8f; }
-/* second, green glow so the corridor feels lit by string lights */
-.glow-g { display: none; }
-html.xmas .glow-g { display: block; z-index: 0; top: -20%; left: 22%; right: auto; bottom: auto; width: 700px; height: 560px; max-width: 100vw;
-  transform: translateX(-50%) translate(calc(var(--px) * -18px), calc(var(--py) * -12px));
-  background: radial-gradient(closest-side, rgba(47,122,88,0.13), transparent 72%); animation: breathe 7s ease-in-out 3.5s infinite; }
-/* string of lights along the top edge */
-.lights { position: fixed; top: 0; left: 0; right: 0; height: 30px; z-index: 11; pointer-events: none; display: flex; justify-content: space-between; padding: 0 6px; opacity: 0; animation: frameIn .9s ease 2.4s forwards; }
-.bulb { position: relative; width: 7px; height: 10px; border-radius: 50% 50% 55% 55%; background: var(--c); box-shadow: 0 0 9px 1px var(--c); opacity: .75; animation: twinkle 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * -.37s); }
-.bulb::before { content: ""; position: absolute; left: 1px; top: -4px; width: 5px; height: 4px; background: #2a2d33; border-radius: 1px; }
-@keyframes twinkle { 0%,100% { opacity: .3; } 50% { opacity: .85; } }
-.intro-sub { position: absolute; left: 50%; bottom: -46px; transform: translateX(-50%); white-space: nowrap; font-family: 'Big Shoulders Display', sans-serif; font-weight: 600; font-size: 1.05rem; letter-spacing: .5em; margin-right: -.5em; color: var(--gold); opacity: 0; animation: subIn 1.2s cubic-bezier(.16,1,.3,1) 1.5s forwards; }
-@keyframes subIn { to { opacity: .9; letter-spacing: .2em; } }
-.badge { display: inline-block; margin: 0 0 18px; padding: 5px 14px; border: 1px solid rgba(220,182,95,.45); border-radius: 999px; color: var(--gold); font-size: .85rem; font-weight: 500; letter-spacing: .06em; background: rgba(220,182,95,.05); }
-.reveal.d0 { animation-delay: 1.9s; }
-/* Santa hat: tweak --hat-x / --hat-y / --hat-w to sit it on the character's head */
-.hat { --hat-x: 62%; --hat-y: 4%; --hat-w: 34%; position: absolute; left: var(--hat-x); top: var(--hat-y); width: var(--hat-w); transform: translate(-50%, -82%) rotate(-5deg); pointer-events: none; }
-.hat svg { display: block; width: 100%; height: auto; overflow: visible; }
-
-/* ---- all-out additions ---- */
-.aurora, .tree, .orn, .drift, .countdown { display: none; }
-html.xmas .aurora { display: block; z-index: 0; background: radial-gradient(ellipse 60% 30% at 25% 6%, rgba(47,122,88,.17), transparent 70%), radial-gradient(ellipse 50% 26% at 78% 10%, rgba(184,58,54,.15), transparent 70%); animation: aurora 14s ease-in-out infinite alternate; }
-@keyframes aurora { from { transform: translateX(-3%); opacity: .7; } to { transform: translateX(3%); opacity: 1; } }
-html.xmas .landing-title { animation: xglow 6s ease-in-out 3s infinite alternate; }
-@keyframes xglow { from { text-shadow: 0 2px 40px rgba(0,0,0,.7), 0 0 34px rgba(184,58,54,.5); } to { text-shadow: 0 2px 40px rgba(0,0,0,.7), 0 0 34px rgba(47,122,88,.55); } }
-html.xmas .btn-primary { background: repeating-linear-gradient(45deg, #b83a36 0 10px, #9f2f2c 10px 20px); }
-html.xmas .btn-primary:hover { background: repeating-linear-gradient(45deg, #e0645a 0 10px, #c9483f 10px 20px); }
-html.xmas nav::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; opacity: .7; background: repeating-linear-gradient(-45deg, #d9453f 0 8px, #f6f1ea 8px 16px); }
-html.xmas .countdown { display: block; margin: -22px 0 34px; color: var(--gold); font-size: 1rem; font-weight: 500; letter-spacing: .04em; }
-html.xmas .lights { display: block; height: 30px; padding: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='20'%3E%3Cpath d='M0 4 Q23 18 46 4' fill='none' stroke='%231f5a42' stroke-width='4'/%3E%3C/svg%3E") repeat-x -19.5px 0 / 46px 20px; }
-html.xmas .lights .bulb { position: absolute; top: 9px; margin: 0; }
-html.xmas .orn { display: block; position: fixed; top: 0; z-index: 11; pointer-events: none; width: 28px; margin-left: -14px; height: calc(var(--len) + 28px); transform-origin: 50% 0; animation: swing 4.5s ease-in-out infinite alternate; animation-delay: var(--d); }
-.orn::before { content: ""; position: absolute; left: 13px; top: 0; width: 1px; height: var(--len); background: rgba(255,255,255,.35); }
-.orn::after { content: ""; position: absolute; left: 0; top: var(--len); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.85) 0 8%, var(--c) 9% 70%, rgba(0,0,0,.35) 100%); box-shadow: 0 0 14px var(--c); }
-@keyframes swing { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
-html.xmas .tree { display: block; position: absolute; left: 2vw; bottom: 0; width: min(21vw, 250px); z-index: 0; pointer-events: none; opacity: 0; animation: frameIn 1s ease 2.6s forwards; filter: drop-shadow(0 0 30px rgba(47,122,88,.3)); }
-.tree svg { display: block; width: 100%; height: auto; }
-.tw { animation: twinkle 2.4s ease-in-out infinite; animation-delay: var(--d); }
-html.xmas .drift { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 90px; pointer-events: none; }
-.drift svg { display: block; width: 100%; height: 100%; }
-html.xmas .staff { padding-bottom: calc(14vh + 70px); }
-@media (max-width: 1100px) { html.xmas .tree { display: none; } }
-@media (max-width: 700px) { html.xmas .orn { display: none; } }
-
-/* ---- cozier, brighter Christmas night ---- */
-html.xmas { --bg: #0b1522; --line: rgba(220,182,95,.08); --text-dim: #9aa8bd; --lit: 255,176,96; }
-html.xmas body { background: linear-gradient(180deg, #0a1830 0%, #0d2233 55%, #0f2a26 100%) fixed; }
-html.xmas .vignette { background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 45%, rgba(3,9,20,.62) 100%); }
-html.xmas .crack { display: none; }
-html.xmas .landing-title::before, html.xmas .landing-title::after { display: none; }
-html.xmas .landing-title .ch { background: linear-gradient(180deg, #fff 30%, #ffe3a8); -webkit-background-clip: text; background-clip: text; color: transparent; }
-html.xmas .intro { background: #070d18; }
-html.xmas .staff { background: linear-gradient(to bottom, rgba(10,24,40,0), rgba(10,24,40,.9) 16vh, #0d2430); }
-.holly { opacity: 0; animation: frameIn .8s ease 1.6s forwards; }
-.stars, .moon, .hearth { display: none; }
-html.xmas .stars { display: block; z-index: 0; background-image: radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent), radial-gradient(1px 1px at 17% 31%, #fff, transparent), radial-gradient(1.5px 1.5px at 26% 8%, #ffe9b8, transparent), radial-gradient(1px 1px at 35% 24%, #fff, transparent), radial-gradient(1.5px 1.5px at 47% 6%, #fff, transparent), radial-gradient(1px 1px at 58% 19%, #ffe9b8, transparent), radial-gradient(1.5px 1.5px at 66% 9%, #fff, transparent), radial-gradient(1px 1px at 74% 28%, #fff, transparent), radial-gradient(1.5px 1.5px at 83% 14%, #ffe9b8, transparent), radial-gradient(1px 1px at 92% 33%, #fff, transparent), radial-gradient(1px 1px at 12% 44%, #fff, transparent), radial-gradient(1.5px 1.5px at 41% 40%, #fff, transparent), radial-gradient(1px 1px at 88% 52%, #fff, transparent); animation: twinkle 5s ease-in-out infinite alternate; }
-html.xmas .moon { display: block; position: fixed; z-index: 0; top: 13%; right: 9%; width: 64px; height: 64px; border-radius: 50%; box-shadow: inset -14px -5px 0 0 #f6ecd2, 0 0 36px rgba(246,236,210,.35); pointer-events: none; }
-html.xmas .hearth { display: block; z-index: 0; background: radial-gradient(ellipse 50% 32% at 12% 100%, rgba(255,160,70,.2), transparent 70%), radial-gradient(ellipse 45% 28% at 90% 100%, rgba(255,120,80,.12), transparent 70%); }
-@media (max-width: 700px) { html.xmas .moon { display: none; } }
-/* ===== end Christmas theme ===== */
 
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
-body { min-height: 100vh; position: relative; }
-.layer { position: fixed; inset: 0; pointer-events: none; }
-
-/* corridor seams, plus a brighter copy that only shows under the cursor */
-.corridor, .corridor-lit {
-  z-index: 0;
-  background-image: repeating-linear-gradient(90deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 130px);
-  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, #000 20%, transparent 85%);
-  mask-image: radial-gradient(ellipse 85% 65% at 50% 35%, #000 20%, transparent 85%);
-}
-.corridor-lit {
-  background-image: repeating-linear-gradient(90deg, rgba(var(--lit),0.55) 0, rgba(var(--lit),0.55) 1px, transparent 1px, transparent 130px);
-  -webkit-mask-image: radial-gradient(circle 230px at var(--mx) var(--my), #000, transparent 100%);
-  mask-image: radial-gradient(circle 230px at var(--mx) var(--my), #000, transparent 100%);
-}
-.torch {
-  z-index: 1;
-  background: radial-gradient(circle 340px at var(--mx) var(--my), rgba(var(--lit),0.09), transparent 100%);
-}
-.glow {
-  z-index: 0; top: -25%; left: 50%; right: auto; bottom: auto;
-  width: 900px; height: 680px; max-width: 140vw;
-  transform: translateX(-50%) translate(calc(var(--px) * -26px), calc(var(--py) * -16px));
-  background: radial-gradient(closest-side, rgba(var(--lit),0.17), transparent 72%);
-  animation: breathe 7s ease-in-out infinite;
-}
-@keyframes breathe { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
-.vignette { z-index: 3; background: radial-gradient(ellipse 88% 68% at 50% 38%, transparent 42%, rgba(0,0,0,0.78) 100%); }
-#dust { z-index: 1; width: 100%; height: 100%; }
-
-@keyframes frameIn { to { opacity: 1; } }
-
-/* a crack across the screen now and then, like the trailer */
-.crack { z-index: 4; width: 100%; height: 100%; opacity: 0; animation: crack 18s linear 6s infinite; }
-.crack polyline { fill: none; stroke: var(--accent-hot); stroke-width: 1.5; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 6px rgba(var(--lit),.8)); }
-@keyframes crack {
-  0%,96% { opacity: 0; } 96.4% { opacity: 1; } 96.8% { opacity: 0; }
-  97.2% { opacity: .8; } 98.4% { opacity: .8; } 98.8% { opacity: 0; } 100% { opacity: 0; }
-}
-
 html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ink); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.5; overflow-x: hidden; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--light-hot); outline-offset: 3px; }
+#snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+html:not(.xmas) #snow { display: none; }
 
-/* intro: a ring draws, the word settles inside, then the ring opens onto the page */
-@property --r { syntax: '<length>'; inherits: false; initial-value: 0px; }
-.intro { position: fixed; inset: 0; z-index: 100; background: #050506; display: grid; place-items: center; --r: 0px;
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent var(--r), #000 calc(var(--r) + 1px));
-  mask-image: radial-gradient(circle at 50% 50%, transparent var(--r), #000 calc(var(--r) + 1px)); }
-.ring-wrap { position: relative; width: 230px; height: 230px; display: grid; place-items: center; }
-.ring-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ring-track { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 1; }
-.ring { fill: none; stroke: var(--ring); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1;
-  transform: rotate(-90deg); transform-origin: 50% 50%; animation: draw 1.7s cubic-bezier(.65,0,.35,1) .2s forwards; filter: drop-shadow(0 0 6px rgba(var(--lit),.6)); }
-@keyframes draw { to { stroke-dashoffset: 0; } }
-.intro-word { font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 2.5rem; text-transform: uppercase; color: var(--text);
-  opacity: 0; letter-spacing: .3em; margin-right: -.3em; animation: wordIn 1.3s cubic-bezier(.16,1,.3,1) .5s forwards; }
-@keyframes wordIn { to { opacity: 1; letter-spacing: .06em; margin-right: -.06em; } }
-.go .intro { animation: iris 1.3s cubic-bezier(.65,0,.35,1) forwards; }
-.go .ring-wrap { animation: ringOut 1s ease forwards; }
-@keyframes iris { 0% { --r: 0px; opacity: 1; } 98% { --r: 150vmax; opacity: 1; } 100% { --r: 150vmax; opacity: 0; visibility: hidden; } }
-@keyframes ringOut { to { transform: scale(2.4); opacity: 0; } }
-/* hold the page's own animations until the intro opens */
-html.js:not(.go) body > *:not(.intro), html.js:not(.go) body > *:not(.intro) * { animation-play-state: paused !important; }
-
-/* the character peeks in from the bottom-right corner */
-.art { position: absolute; right: 0; bottom: 0; z-index: 0; pointer-events: none; }
-.art-body { position: relative; transform-origin: 100% 100%; transform: translateX(0) rotate(-2.5deg);
-  transition: transform .8s cubic-bezier(.22,1,.36,1) .12s;
-  animation: enter 1.3s cubic-bezier(.22,1,.36,1) .8s backwards; }
-@keyframes enter { from { transform: translateX(110%) rotate(0deg); } }
-/* figure wraps the image and the hat so they bob and drift together */
-.art-fig { position: relative; display: block; translate: calc(var(--px) * -10px) 0; animation: bob 6s ease-in-out infinite alternate; }
-.art img { display: block; height: min(80vh, 900px); width: auto; user-select: none; filter: drop-shadow(0 0 40px rgba(var(--lit),.25)); }
-@keyframes bob { from { transform: translateY(0); } to { transform: translateY(-8px); } }
-.hero { position: relative; z-index: 1; }
-
-.cue { position: absolute; left: 0; right: 0; bottom: 26px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  color: var(--text-dim); font-size: .85rem; text-decoration: none; transition: color .2s; }
-.cue:hover, .cue:focus-visible { color: var(--text); outline: none; }
-.cue svg { width: 18px; height: 18px; animation: nudge 2s ease-in-out infinite; }
-@keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
-.reveal.d3 { animation-delay: 2.8s; }
-
-/* staff roster */
-.staff { position: relative; z-index: 5; padding: 14vh clamp(20px, 6vw, 80px) 14vh;
-  background: linear-gradient(to bottom, rgba(8,9,11,0), rgba(8,9,11,.92) 16vh, #08090b); }
-.staff-inner { max-width: 960px; margin: 0 auto; }
-.staff-title { font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: clamp(2.6rem, 6vw, 4.2rem);
-  line-height: 1; letter-spacing: .02em; text-transform: uppercase; margin: 0 0 36px; }
-.roster { list-style: none; margin: 0; padding: 0; }
-.member { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
-  padding: 26px 0 26px 22px; opacity: 0; transform: translateX(-18px);
-  transition: opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1); transition-delay: calc(var(--i) * 90ms); }
-.member::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(255,255,255,.14);
-  transform: scaleX(0); transform-origin: left; transition: transform 1.1s cubic-bezier(.16,1,.3,1); transition-delay: calc(var(--i) * 90ms + 150ms); }
-.member::after { content: ""; position: absolute; left: 0; top: 26px; bottom: 26px; width: 3px; background: var(--accent);
-  transform: scaleY(0); transform-origin: top; transition: transform .5s ease; }
-.member.in { opacity: 1; transform: none; }
-.member.in::before { transform: scaleX(1); }
-.member:hover::after { transform: scaleY(1); }
-.m-name { font-family: 'Big Shoulders Display', sans-serif; font-weight: 700; font-size: clamp(1.9rem, 4.6vw, 3.1rem); line-height: 1; letter-spacing: .01em; transition: color .25s; }
-.member:hover .m-name { color: var(--accent-hot); }
-.m-role { color: var(--text-dim); text-align: right; max-width: 34ch; line-height: 1.4; }
-.staff-cta { margin: 48px 0 0 22px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; color: var(--text-dim); }
-
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 22px clamp(20px, 5vw, 56px);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  background: linear-gradient(to bottom, rgba(8,9,11,0.9), rgba(8,9,11,0));
-  opacity: 0; animation: frameIn .9s ease 2.2s forwards;
-}
-.nav-brand { font-family: 'Big Shoulders Display', sans-serif; font-weight: 700; font-size: 1.4rem; letter-spacing: .02em; color: var(--text); text-decoration: none; text-transform: uppercase; }
+/* nav */
+nav { position: fixed; inset: 0 0 auto 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 18px var(--pad); background: linear-gradient(var(--ink), transparent); }
+.brand { font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; text-decoration: none; }
 .nav-links { display: flex; gap: 10px; }
+.btn { display: inline-flex; align-items: center; padding: 11px 20px; border: 1px solid var(--line); border-radius: 2px; font-size: .95rem; font-weight: 500; text-decoration: none; white-space: nowrap; color: var(--text); transition: background .2s, border-color .2s, color .2s; }
+.btn:hover { border-color: var(--light); color: var(--light-hot); }
+.btn-primary { background: var(--light); border-color: var(--light); color: var(--accent-ink); }
+.btn-primary:hover { background: var(--light-hot); border-color: var(--light-hot); color: var(--accent-ink); }
 
-.btn {
-  position: relative; overflow: hidden;
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 10px 18px; border-radius: 6px;
-  font-size: .92rem; font-weight: 500; text-decoration: none; white-space: nowrap;
-  transition: border-color .2s, background .2s, transform .15s, box-shadow .25s;
-}
-.btn::after { /* light sweeping across on hover */
-  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
-  background: linear-gradient(100deg, transparent, rgba(255,255,255,.22), transparent);
-  transform: skewX(-18deg); transition: left .55s ease;
-}
-.btn:hover::after { left: 130%; }
-.btn:focus-visible { outline: 2px solid var(--accent-hot); outline-offset: 2px; }
-.btn-ghost { color: var(--text); border: 1px solid var(--line); background: rgba(255,255,255,.02); }
-.btn-ghost:hover { border-color: rgba(var(--lit),.55); background: rgba(var(--lit),.07); }
-.btn-primary { color: var(--accent-ink); background: var(--accent); border: 1px solid var(--accent); }
-.btn-primary:hover { background: var(--accent-hot); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(var(--lit),.4); }
+/* hero: a caged maintenance lamp flickers on over the floor line the title stands on */
+.hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; padding: 0 var(--pad); overflow: hidden; background: linear-gradient(180deg, var(--ink), var(--night)); }
+.hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 40% 60% at calc(100% - var(--rx) - clamp(140px, 21vw, 310px)) 30%, rgba(var(--lit), .15), transparent 70%); }
+.hero-top { position: relative; z-index: 3; flex: 1; display: flex; align-items: flex-end; padding-top: 90px; }
+.title { display: inline-block; margin: 0; padding: 0 .06em .03em 0; font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: clamp(5rem, 22vw, 20rem); line-height: .78; text-transform: uppercase; letter-spacing: .01em; transform: skewX(-7deg); transform-origin: 0 100%; text-shadow: 0 0 80px rgba(var(--lit), .22); animation: write 1.1s cubic-bezier(.7, 0, .2, 1) 1.2s backwards; }
+.hero-bottom { position: relative; z-index: 3; height: var(--floor-h); border-top: 1px solid var(--line); padding-top: clamp(18px, 3vh, 32px); }
+.hero-bottom > * { animation: rise .9s ease 1.9s backwards; }
+.tagline { margin: 0 0 10px; font-size: clamp(1.25rem, 2.6vw, 1.75rem); font-weight: 500; }
+.status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 22px; margin: 0 0 24px; color: var(--dim); }
+.dot { display: inline-block; width: 7px; height: 7px; margin-right: 10px; border-radius: 50%; background: var(--light); }
+.countdown { color: var(--gold); }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+/* the lamp */
+.lamp { --w: clamp(280px, 42vw, 620px); --sw: clamp(72px, 8vw, 110px); position: absolute; top: 0; right: var(--rx); width: var(--w); height: calc(100% - var(--floor-h) * .3); z-index: 1; pointer-events: none; }
+.cord { position: absolute; left: 50%; top: 0; width: 2px; height: var(--lamp-y); margin-left: -1px; background: #000; }
+.shade { position: absolute; left: 50%; top: var(--lamp-y); width: var(--sw); height: calc(var(--sw) * .48); margin-left: calc(var(--sw) / -2); border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(180deg, #4a4e57, #1c1d21); }
+.bulb { position: absolute; left: 50%; top: calc(var(--lamp-y) + var(--sw) * .48 - 4px); width: calc(var(--sw) * .5); height: 10px; margin-left: calc(var(--sw) / -4); border-radius: 50%; background: var(--light-hot); box-shadow: 0 0 40px 14px rgba(var(--lit), .6); animation: flick 1.7s linear .4s backwards; }
+.cone { position: absolute; inset: calc(var(--lamp-y) + var(--sw) * .48) 0 0 0; background: linear-gradient(180deg, rgba(var(--lit), .4), rgba(var(--lit), .03)); clip-path: polygon(calc(50% - var(--sw) / 4) 0, calc(50% + var(--sw) / 4) 0, 100% 100%, 0 100%); animation: flick 1.7s linear .4s backwards; }
+@keyframes flick { 0%, 14% { opacity: 0; } 16% { opacity: .9; } 20% { opacity: .05; } 26% { opacity: 1; } 32% { opacity: .35; } 38%, 100% { opacity: 1; } }
+@keyframes write { from { clip-path: inset(0 100% 0 0); } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
 
-main { position: relative; overflow: hidden; z-index: 5; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 17vh 24px 80px; }
-.hero { text-align: center; max-width: 680px; }
+/* team: a plain roster; the row under your cursor is lit like the hall lamp */
+.team { position: relative; z-index: 3; padding: clamp(72px, 12vh, 140px) var(--pad) clamp(170px, 24vh, 260px); background: var(--night); }
+html:not(.xmas) .team { padding-bottom: 96px; }
+.team-inner { max-width: 1100px; }
+.team-title { margin: 0 0 clamp(36px, 6vh, 64px); font-family: 'Big Shoulders Display', sans-serif; font-weight: 800; font-size: clamp(2.8rem, 7vw, 5.2rem); line-height: .95; text-transform: uppercase; }
+.roster { list-style: none; margin: 0; padding: 0; }
+.mem { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding: 26px 0 26px 22px; border-bottom: 1px solid var(--line); transition: background .3s; }
+.mem:first-child { border-top: 1px solid var(--line); }
+.mem:hover { background: linear-gradient(90deg, rgba(var(--lit), .14), transparent 70%); }
+.m-name { font-family: 'Big Shoulders Display', sans-serif; font-weight: 700; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1; transition: transform .3s, color .3s; }
+.mem:hover .m-name { color: var(--light-hot); transform: translateX(10px); }
+.m-role { color: var(--dim); text-align: right; max-width: 34ch; line-height: 1.4; }
+.join { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: clamp(48px, 8vh, 88px); color: var(--dim); }
+.drift { position: absolute; left: 0; right: 0; bottom: 0; height: 100px; pointer-events: none; }
+.drift svg { display: block; width: 100%; height: 100%; }
 
-.landing-title {
-  position: relative; display: inline-block;
-  font-family: 'Big Shoulders Display', sans-serif; font-weight: 800;
-  font-size: clamp(3.8rem, 12vw, 7.6rem); line-height: .92; letter-spacing: .02em;
-  text-transform: uppercase; margin: 0 0 18px; color: var(--text);
-  text-shadow: 0 2px 40px rgba(0,0,0,.7);
-}
-.landing-title .ch { display: inline-block; }
-.js .landing-title .ch { opacity: 0; transform: translateY(40%); filter: blur(8px); animation: letter .9s cubic-bezier(.16,1,.3,1) forwards; animation-delay: calc(1.3s + var(--i) * 80ms); }
-@keyframes letter { to { opacity: 1; transform: none; filter: blur(0); } }
-.landing-title::before, .landing-title::after {
-  content: attr(data-text); position: absolute; inset: 0; opacity: 0; pointer-events: none;
-  animation: glitch 18s linear 6s infinite;
-}
-.landing-title::before { color: var(--accent-hot); }
-.landing-title::after { color: #7fb4c9; animation-name: glitch2; }
-@keyframes glitch {
-  0%,96% { opacity: 0; } 96.4% { opacity: .9; clip-path: inset(10% 0 62% 0); transform: translateX(-6px); }
-  96.8% { opacity: .9; clip-path: inset(58% 0 12% 0); transform: translateX(5px); }
-  97.2%,100% { opacity: 0; }
-}
-@keyframes glitch2 {
-  0%,96.2% { opacity: 0; } 96.6% { opacity: .6; clip-path: inset(40% 0 35% 0); transform: translateX(7px); }
-  97% { opacity: 0; } 100% { opacity: 0; }
-}
-
-.landing-sub { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-dim); margin: 0 0 40px; line-height: 1.5; }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 rgba(var(--lit),.6); animation: pulse 2.2s ease-out infinite; }
-@keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(var(--lit),0); } 100% { box-shadow: 0 0 0 0 rgba(var(--lit),0); } }
-
-.landing-buttons { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; }
-.landing-buttons .btn { padding: 12px 22px; font-size: .95rem; }
-
-.reveal { opacity: 0; transform: translateY(12px); animation: rise .9s cubic-bezier(.16,1,.3,1) forwards; }
-.reveal.d1 { animation-delay: 2.1s; } .reveal.d2 { animation-delay: 2.35s; }
-@keyframes rise { to { opacity: 1; transform: none; } }
-
-@media (max-width: 1000px) { .art img { height: min(44vh, 70vw); } }
 @media (max-width: 560px) {
-  .nav-links { gap: 6px; } .btn { padding: 8px 12px; font-size: .82rem; }
-  .landing-buttons { flex-direction: column; width: 100%; }
-  .landing-buttons .btn { width: 100%; }
-  .corridor-lit, .torch { display: none; }
-  .art img { height: min(36vh, 80vw); }
-  .member { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .nav-links { gap: 6px; } .nav-links .btn { padding: 8px 12px; font-size: .82rem; }
+  .cta-row .btn-ghost { display: none; }
+  .mem { flex-direction: column; gap: 6px; }
   .m-role { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  nav, .reveal, .art, .member, .lights, .tree { opacity: 1; transform: none; }
-  .member::before { transform: scaleX(1); }
-  .intro { display: none; }
-    .js .landing-title .ch { opacity: 1; transform: none; filter: none; }
-  .crack, #dust { display: none; }
+  #snow { display: none; }
 }
 </style>
 </head>
 <body>
-<div class="intro" aria-hidden="true">
-  <div class="ring-wrap">
-    <svg viewBox="0 0 200 200"><circle class="ring-track" cx="100" cy="100" r="92"/><circle class="ring" cx="100" cy="100" r="92" pathLength="1"/><g class="holly xmas-only" transform="translate(36 162)"><ellipse rx="17" ry="6.5" fill="#2f7a58" transform="rotate(-40)"/><ellipse rx="17" ry="6.5" fill="#3f9c70" transform="rotate(10)"/><ellipse rx="17" ry="6.5" fill="#2f7a58" transform="rotate(-85)"/><circle cx="1" cy="1" r="4.5" fill="#d9453f"/><circle cx="-6" cy="5" r="4.5" fill="#e0645a"/><circle cx="7" cy="5" r="4.5" fill="#c23a36"/></g></svg>
-    <span class="intro-word">Outpace</span>
-    <span class="intro-sub xmas-only">Christmas Update</span>
-  </div>
-</div>
-<div class="layer corridor" aria-hidden="true"></div>
-<div class="layer corridor-lit" aria-hidden="true"></div>
-<div class="layer glow" aria-hidden="true"></div>
-<div class="layer glow glow-g" aria-hidden="true"></div>
-<div class="layer stars xmas-only" aria-hidden="true"></div>
-<div class="layer aurora xmas-only" aria-hidden="true"></div>
-<div class="layer hearth xmas-only" aria-hidden="true"></div>
-<div class="moon xmas-only" aria-hidden="true"></div>
-<canvas id="dust" class="layer" aria-hidden="true"></canvas>
-<div class="layer torch" aria-hidden="true"></div>
-<div class="layer vignette" aria-hidden="true"></div>
-<svg class="layer crack" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-  <polyline points="56,0 52,14 58,27 49,41 55,55 47,70 53,84 50,100"/>
-</svg>
-<span class="orn xmas-only" style="left:18%;--len:70px;--c:#d9453f;--d:0.0s" aria-hidden="true"></span><span class="orn xmas-only" style="left:30%;--len:120px;--c:#dcb65f;--d:-1.4s" aria-hidden="true"></span><span class="orn xmas-only" style="left:42%;--len:85px;--c:#3f9c70;--d:-2.6s" aria-hidden="true"></span><span class="orn xmas-only" style="left:54%;--len:140px;--c:#d9453f;--d:-0.8s" aria-hidden="true"></span>
-<div class="lights xmas-only" id="lights" aria-hidden="true"></div>
+<canvas id="snow" aria-hidden="true"></canvas>
 
 <nav>
-  <a class="nav-brand" href="https://www.out-pace.org/">Outpace</a>
+  <a class="brand" href="https://www.out-pace.org/">Outpace</a>
   <div class="nav-links">
-    <a class="btn btn-ghost" href="https://discord.gg/ZzWwDURXhG" target="_blank" rel="noopener">Discord</a>
-    <a class="btn btn-ghost" href="https://www.out-pace.org/releasedate">Release</a>
+    <a class="btn" href="https://discord.gg/ZzWwDURXhG" target="_blank" rel="noopener">Discord</a>
+    <a class="btn" href="https://www.out-pace.org/releasedate">Release</a>
     <a class="btn btn-primary" href="https://www.out-pace.org/apply">Apply for Staff</a>
   </div>
 </nav>
 
-<main>
-  <div class="art" aria-hidden="true">
-    <div class="art-body">
-      <div class="art-fig">
-        <img src="outpace-character.png" alt="" width="602" height="1100">
-        <div class="hat xmas-only"><svg viewBox="0 0 100 80"><path d="M10 64 C12 30 34 8 64 8 C80 8 90 18 92 30 C78 24 66 34 64 64 Z" fill="#c23a36"/>
-          <path d="M10 64 C12 30 34 8 64 8" fill="none" stroke="#e0645a" stroke-width="2" opacity=".5"/>
-          <rect x="4" y="58" width="68" height="18" rx="9" fill="#f6f1ea"/><circle cx="92" cy="32" r="9" fill="#f6f1ea"/></svg></div>
-      </div>
-    </div>
-  </div>
-  <div class="tree xmas-only" aria-hidden="true"><svg viewBox="0 0 200 300"><rect x="88" y="250" width="24" height="26" fill="#5a3a24"/>
-    <path d="M100 30 L150 100 H122 L168 170 H132 L184 250 H16 L68 170 H32 L78 100 H50 Z" fill="#1f5a42"/>
-    <path d="M100 30 L128 100 H122 L168 170 H132 L184 250 H100 Z" fill="#2f7a58" opacity=".55"/>
-    <path d="M100 12 l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="#dcb65f"/>
-    <g><circle class="tw" style="--d:0s" cx="92" cy="90" r="5" fill="#d9453f"/><circle class="tw" style="--d:-.6s" cx="116" cy="130" r="5" fill="#dcb65f"/><circle class="tw" style="--d:-1.2s" cx="74" cy="150" r="5" fill="#dcb65f"/><circle class="tw" style="--d:-1.8s" cx="130" cy="190" r="5" fill="#d9453f"/><circle class="tw" style="--d:-.3s" cx="60" cy="215" r="5" fill="#d9453f"/><circle class="tw" style="--d:-1s" cx="104" cy="225" r="5" fill="#dcb65f"/><circle class="tw" style="--d:-1.5s" cx="156" cy="236" r="5" fill="#dcb65f"/><circle class="tw" style="--d:-2.1s" cx="40" cy="238" r="5" fill="#d9453f"/></g>
-    <rect x="14" y="262" width="46" height="34" fill="#b83a36"/><rect x="33" y="262" width="8" height="34" fill="#dcb65f"/>
-    <rect x="140" y="270" width="40" height="26" fill="#2f7a58"/><rect x="156" y="270" width="8" height="26" fill="#d9453f"/>
-    <rect x="64" y="276" width="34" height="20" fill="#dcb65f"/><rect x="77" y="276" width="8" height="20" fill="#b83a36"/></svg></div>
-  <div class="hero">
-    <div class="badge reveal d0 xmas-only">Christmas Update</div><br>
-    <h1 class="landing-title" id="title" data-text="Outpace" aria-label="Outpace">Outpace</h1>
-    <p class="landing-sub reveal d1"><span class="dot" aria-hidden="true"></span>Currently in development.</p>
-    <p class="countdown reveal d1 xmas-only" id="countdown"></p>
-    <div class="landing-buttons reveal d2">
+<header class="hero">
+  <div class="lamp" aria-hidden="true"><div class="cone"></div><div class="cord"></div><div class="shade"></div><div class="bulb"></div></div>
+  <div class="hero-top"><h1 class="title">Outpace</h1></div>
+  <div class="hero-bottom">
+    <p class="tagline">Escape the maintenance halls before the worker finds you.</p>
+    <p class="status"><span><span class="dot" aria-hidden="true"></span>Currently in development.</span><strong class="countdown xmas-only">Christmas Update</strong><span class="xmas-only" id="countdown"></span></p>
+    <div class="cta-row">
       <a class="btn btn-primary" href="https://discord.gg/ZzWwDURXhG" target="_blank" rel="noopener">Discord</a>
       <a class="btn btn-ghost" href="https://www.out-pace.org/releasedate">Release</a>
       <a class="btn btn-ghost" href="https://www.out-pace.org/apply">Apply for Staff</a>
     </div>
   </div>
-  <a class="cue reveal d3" href="#staff"><span>Meet the team</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-</main>
+</header>
 
-<section class="staff" id="staff" aria-labelledby="staff-h">
-  <div class="staff-inner">
-    <h2 class="staff-title" id="staff-h">The team</h2>
+<section class="team" aria-labelledby="team-h">
+  <div class="team-inner">
+    <h2 class="team-title" id="team-h">The team</h2>
     <ul class="roster" id="roster"></ul>
-    <div class="staff-cta"><span>Want to help build Outpace?</span><a class="btn btn-primary" href="https://www.out-pace.org/apply">Apply for Staff</a></div>
+    <div class="join"><span>Want to help build Outpace?</span><a class="btn btn-primary" href="https://www.out-pace.org/apply">Apply for Staff</a></div>
   </div>
-    <div class="drift xmas-only" aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><defs><linearGradient id="sn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f8ff"/><stop offset="1" stop-color="#bccce6"/></linearGradient></defs><path d="M0 100 V52 Q120 20 240 46 T480 40 T720 50 T960 36 T1200 48 T1440 34 V100Z" fill="url(#sn)"/></svg></div>
+  <div class="drift xmas-only" aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 100 V44 Q140 14 280 40 T560 34 T840 44 T1120 30 T1440 40 V100Z" fill="#c9d8ee"/><path d="M0 100 V62 Q120 36 240 58 T480 54 T720 62 T960 50 T1200 60 T1440 52 V100Z" fill="#f4f8ff"/></svg></div>
 </section>
 
 <script>
 (function () {
   var root = document.documentElement;
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var xmas = root.classList.contains('xmas');
-
-  // split the title into letters for the staggered reveal
-  var t = document.getElementById('title');
-  var word = t.textContent;
-  t.textContent = '';
-  word.split('').forEach(function (c, i) {
-    var s = document.createElement('span');
-    s.className = 'ch'; s.textContent = c; s.style.setProperty('--i', i); s.setAttribute('aria-hidden', 'true');
-    t.appendChild(s);
-  });
-
-  // string of Christmas lights: bulbs hang in gentle swags along the top
-  if (xmas) {
-    var strand = document.getElementById('lights');
-    var cols = ['#d9453f', '#dcb65f', '#3f9c70'];
-    var count = Math.ceil(window.innerWidth / 46) + 1;
-    for (var b = 0; b < count; b++) {
-      var bu = document.createElement('span');
-      bu.className = 'bulb';
-      bu.style.setProperty('--c', cols[b % 3]);
-      bu.style.setProperty('--i', b);
-      bu.style.left = (b * 46) + 'px';
-      strand.appendChild(bu);
-    }
-  }
-
-  // days until Christmas
-  var cd = document.getElementById('countdown');
-  if (cd) {
-    var now = new Date(), d = Math.ceil((new Date(now.getFullYear(), 11, 25) - now) / 864e5);
-    cd.textContent = d > 1 ? d + ' days until Christmas' : d === 1 ? 'Christmas is tomorrow' : 'Merry Christmas';
-  }
-
-  // flashlight + gentle parallax that follow the cursor
-  var tx = 0.5, ty = 0.38, cx = tx, cy = ty;
-  window.addEventListener('pointermove', function (e) {
-    tx = e.clientX / window.innerWidth; ty = e.clientY / window.innerHeight;
-  }, { passive: true });
-  function follow() {
-    cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
-    root.style.setProperty('--mx', (cx * 100).toFixed(2) + '%');
-    root.style.setProperty('--my', (cy * 100).toFixed(2) + '%');
-    root.style.setProperty('--px', (cx - 0.5).toFixed(3));
-    root.style.setProperty('--py', (cy - 0.5).toFixed(3));
-    requestAnimationFrame(follow);
-  }
-  if (!reduce) follow();
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ===== STAFF LIST: edit here. One line per person, in the order shown. =====
   var STAFF = [
@@ -438,68 +149,46 @@ main { position: relative; overflow: hidden; z-index: 5; min-height: 100vh; disp
     { name: 'PaperMation', role: 'Artist' }
   ];
   // ==========================================================================
+  function el(tag, cls, text) {
+    var e = document.createElement(tag); e.className = cls;
+    if (text) e.textContent = text; return e;
+  }
   var roster = document.getElementById('roster');
-  STAFF.forEach(function (m, i) {
-    var li = document.createElement('li'); li.className = 'member'; li.style.setProperty('--i', i);
-    var n = document.createElement('span'); n.className = 'm-name'; n.textContent = m.name;
-    var r = document.createElement('span'); r.className = 'm-role'; r.textContent = m.role;
-    li.appendChild(n); li.appendChild(r); roster.appendChild(li);
+  STAFF.forEach(function (m) {
+    var li = el('li', 'mem');
+    li.appendChild(el('span', 'm-name', m.name));
+    li.appendChild(el('span', 'm-role', m.role));
+    roster.appendChild(li);
   });
-  if (xmas) document.getElementById('staff-h').textContent = 'The Christmas crew';
-  var rows = roster.children;
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.4 });
-    for (var k = 0; k < rows.length; k++) io.observe(rows[k]);
-  } else { for (var k2 = 0; k2 < rows.length; k2++) rows[k2].classList.add('in'); }
+  if (xmas) document.getElementById('team-h').textContent = 'The Christmas crew';
 
-  // open the intro ring onto the page (a little later at Christmas so the subtitle can land)
-  setTimeout(function () { root.classList.add('go'); }, reduce ? 0 : (xmas ? 3000 : 2400));
+  // days until Christmas
+  var cd = document.getElementById('countdown');
+  if (cd) {
+    var n = new Date(), d = Math.ceil((new Date(n.getFullYear(), 11, 25) - n) / 864e5);
+    cd.textContent = d > 1 ? d + ' days until Christmas' : d === 1 ? 'Christmas is tomorrow' : 'Merry Christmas';
+  }
 
-  // slow drifting dust caught in the light, plus snow at Christmas
-  var cv = document.getElementById('dust');
-  if (reduce || !cv.getContext) return;
-  var ctx = cv.getContext('2d'), w, h, dpr, motes = [], flakes = [];
-  function size() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = cv.width = innerWidth * dpr; h = cv.height = innerHeight * dpr;
+  // snow
+  var cv = document.getElementById('snow');
+  if (!xmas || reduce || !cv.getContext) return;
+  var c = cv.getContext('2d'), w, h, dpr, fl = [];
+  function size() { dpr = Math.min(window.devicePixelRatio || 1, 2); w = cv.width = innerWidth * dpr; h = cv.height = innerHeight * dpr; }
+  function mk(top) {
+    var r = (Math.random() * 2 + .6) * dpr;
+    return { x: Math.random() * w, y: top ? -10 : Math.random() * h, r: r, vy: (r / dpr * .3 + .3) * dpr, p: Math.random() * 6.28, a: Math.random() * .4 + .3 };
   }
-  function make() {
-    return { x: Math.random() * w, y: Math.random() * h, r: (Math.random() * 1.4 + 0.4) * dpr,
-             vy: -(Math.random() * 0.12 + 0.03) * dpr, vx: (Math.random() - 0.5) * 0.08 * dpr,
-             a: Math.random() * 0.45 + 0.1, p: Math.random() * 6.28 };
-  }
-  function flake(top) {
-    var r = (Math.random() * 2.2 + 0.6) * dpr;
-    return { x: Math.random() * w, y: top ? -10 : Math.random() * h, r: r,
-             vy: (r / dpr * 0.28 + 0.25) * dpr, sway: Math.random() * 0.4 + 0.1,
-             a: Math.random() * 0.35 + 0.3, p: Math.random() * 6.28 };
-  }
-  size(); for (var i = 0; i < 70; i++) motes.push(make());
-  if (xmas) for (var f = 0; f < 150; f++) flakes.push(flake(false));
+  size(); for (var i = 0; i < 110; i++) fl.push(mk(false));
   addEventListener('resize', size);
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = xmas ? '#f3d9b0' : '#f0b08c';
-    for (var i = 0; i < motes.length; i++) {
-      var m = motes[i]; m.x += m.vx; m.y += m.vy; m.p += 0.01;
-      if (m.y < -5) { m.y = h + 5; m.x = Math.random() * w; }
-      // brighter the closer to the door's light
-      var d = Math.abs(m.x - w / 2) / (w / 2), glow = Math.max(0.2, 1 - d);
-      ctx.globalAlpha = m.a * glow * (0.6 + 0.4 * Math.sin(m.p));
-      ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, 6.283); ctx.fill();
-    }
-    ctx.fillStyle = '#fff';
-    for (var j = 0; j < flakes.length; j++) {
-      var s = flakes[j]; s.p += 0.012; s.y += s.vy; s.x += Math.sin(s.p) * s.sway * dpr;
-      if (s.y > h + 10) { flakes[j] = flake(true); continue; }
-      ctx.globalAlpha = s.a;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
+  (function draw() {
+    c.clearRect(0, 0, w, h); c.fillStyle = '#fff';
+    for (var j = 0; j < fl.length; j++) {
+      var s = fl[j]; s.p += .012; s.y += s.vy; s.x += Math.sin(s.p) * .4 * dpr;
+      if (s.y > h + 10) { fl[j] = mk(true); continue; }
+      c.globalAlpha = s.a; c.beginPath(); c.arc(s.x, s.y, s.r, 0, 6.283); c.fill();
     }
     requestAnimationFrame(draw);
-  }
-  draw();
+  })();
 })();
 </script>
 </body>
