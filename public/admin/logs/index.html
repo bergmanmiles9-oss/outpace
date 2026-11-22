@@ -5,39 +5,226 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Outpace — Logs</title>
     <meta name="description" content="Outpace Admin Logs">
-    <link rel="stylesheet" href="/styles.css">
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
-      /* Command box styles (kept here so it works even if styles.css has no rule for it) */
-      .console-cmd { margin: 0 0 14px; }
+      :root {
+        --bg: #07111f;
+        --night: #0d2031;
+        --line: rgba(220, 182, 95, 0.18);
+        --panel: rgba(9, 22, 38, 0.74);
+        --text: #eef3fa;
+        --text-dim: #9db0c7;
+        --accent: #ffb45e;
+        --accent-hot: #ffdca4;
+        --accent-ink: #1a0d05;
+        --warn: #e0645a;
+        --warn-rgb: 224, 100, 90;
+        --pine: #6fbf8f;
+        --lit: 255, 180, 94;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow-x: hidden;
+        background: linear-gradient(180deg, var(--bg), var(--night)) fixed;
+      }
+
+      .glow {
+        position: fixed;
+        top: -14%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 900px;
+        max-width: 140vw;
+        height: 640px;
+        background: radial-gradient(closest-side, rgba(var(--lit), 0.12), transparent 72%);
+        z-index: 0;
+        pointer-events: none;
+      }
+      .vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse 90% 60% at 50% 0%, transparent 55%, rgba(3, 9, 20, 0.5) 100%);
+      }
+      #snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+      /* a caged maintenance lamp hangs at the side on very wide screens and flickers on once */
+      .lamp { display: none; }
+      @media (min-width: 1320px) {
+        .lamp {
+          --sw: 72px; --lamp-y: 110px;
+          display: block; position: absolute; top: 0; right: 4vw;
+          width: clamp(200px, 20vw, 340px); height: 70vh;
+          z-index: 1; pointer-events: none;
+        }
+      }
+      .cord { position: absolute; left: 50%; top: 0; width: 2px; height: var(--lamp-y); margin-left: -1px; background: #000; }
+      .shade { position: absolute; left: 50%; top: var(--lamp-y); width: var(--sw); height: calc(var(--sw) * .48); margin-left: calc(var(--sw) / -2); border-radius: 50% 50% 6px 6px / 100% 100% 6px 6px; background: linear-gradient(180deg, #4a4e57, #1c1d21); }
+      .bulb { position: absolute; left: 50%; top: calc(var(--lamp-y) + var(--sw) * .48 - 4px); width: calc(var(--sw) * .5); height: 10px; margin-left: calc(var(--sw) / -4); border-radius: 50%; background: var(--accent-hot); box-shadow: 0 0 40px 14px rgba(var(--lit), .6); animation: flick 1.7s linear .4s backwards; }
+      .cone { position: absolute; inset: calc(var(--lamp-y) + var(--sw) * .48) 0 0 0; background: linear-gradient(180deg, rgba(var(--lit), .26), rgba(var(--lit), .02)); clip-path: polygon(calc(50% - var(--sw) / 4) 0, calc(50% + var(--sw) / 4) 0, 100% 100%, 0 100%); animation: flick 1.7s linear .4s backwards; }
+      @keyframes flick { 0%, 14% { opacity: 0; } 16% { opacity: .9; } 20% { opacity: .05; } 26% { opacity: 1; } 32% { opacity: .35; } 38%, 100% { opacity: 1; } }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        padding: 20px clamp(20px, 5vw, 56px);
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(to bottom, rgba(7, 17, 31, 0.92), rgba(7, 17, 31, 0.75));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .nav-brand {
+        font-family: 'Big Shoulders Display', sans-serif;
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: 0.02em;
+        color: var(--text);
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      .nav-brand:hover { color: var(--accent-hot); }
+      .nav-brand:focus-visible { outline: 2px solid var(--accent-hot); outline-offset: 4px; border-radius: 2px; }
+
+      .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+      .console-wrap {
+        position: relative;
+        z-index: 2;
+        flex: 1;
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: clamp(24px, 5vw, 48px) 24px 40px;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+      }
+      @keyframes rise { to { opacity: 1; transform: none; } }
+
+      /* filters */
+      .console-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+      .filter-btn {
+        padding: 9px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-dim);
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+      }
+      .filter-btn:hover { color: var(--text); border-color: rgba(var(--lit), 0.5); }
+      .filter-btn:focus-visible { outline: 2px solid var(--accent-hot); outline-offset: 2px; }
+      .filter-btn.active { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+
+      /* command box */
+      .console-cmd { margin: 0 0 22px; }
       .console-cmd input {
         width: 100%;
-        box-sizing: border-box;
-        padding: 10px 12px;
-        font: inherit;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        color: inherit;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
+        padding: 13px 14px;
+        font-family: var(--mono);
+        font-size: 0.92rem;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        border-radius: 8px;
         outline: none;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
       }
-      .console-cmd input:focus-visible { border-color: rgba(255, 255, 255, 0.6); }
+      .console-cmd input::placeholder { color: var(--text-dim); opacity: 0.75; }
+      .console-cmd input:focus-visible {
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 0 0 3px rgba(var(--lit), 0.16);
+      }
       .console-cmd input:disabled { opacity: 0.5; cursor: not-allowed; }
-      .console-cmd-status { margin: 6px 0 0; font-size: 0.85em; opacity: 0.7; min-height: 1.2em; }
-    </style>
+      .console-cmd-status { margin: 8px 0 0; font-size: 0.85rem; color: var(--text-dim); min-height: 1.3em; }
 
+      /* log panel */
+      .console-empty {
+        margin: 0;
+        padding: 36px 24px;
+        text-align: center;
+        color: var(--text-dim);
+        line-height: 1.6;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+      }
+      .console {
+        max-height: 60vh;
+        overflow: auto;
+        padding: 8px 0;
+        border: 1px solid var(--line);
+        border-top: 2px solid var(--accent);
+        border-radius: 10px;
+        background: var(--panel);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      }
+      .console:empty { display: none; }
+      .console-line {
+        margin: 0;
+        padding: 7px 16px;
+        border-left: 2px solid transparent;
+        font-family: var(--mono);
+        font-size: 0.88rem;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+      }
+      .console-line[data-priority="high"] { border-left-color: var(--warn); background: rgba(var(--warn-rgb), 0.08); }
+      .ts { color: var(--text-dim); }
+      .tag-low { color: var(--pine); }
+      .tag-high { color: var(--warn); font-weight: 600; }
+      .msg { color: var(--text); }
+
+      /* snow drift, last thing on the page */
+      .drift { position: relative; z-index: 2; flex: none; height: 90px; pointer-events: none; }
+      .drift svg { display: block; width: 100%; height: 100%; }
+
+      @media (max-width: 560px) {
+        .console-filters .filter-btn { flex: 1 1 auto; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .console-wrap { animation: none; opacity: 1; transform: none; }
+        .bulb, .cone { animation: none; }
+        #snow { display: none; }
+      }
+    </style>
   </head>
   <body>
-    <div class="bg"></div>
-    <div class="rays"></div>
-    <div class="particles" id="particles"></div>
+    <div class="glow" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="lamp" aria-hidden="true"><div class="cone"></div><div class="cord"></div><div class="shade"></div><div class="bulb"></div></div>
+    <canvas id="snow" aria-hidden="true"></canvas>
 
     <nav class="nav">
       <a class="nav-brand" href="https://www.out-pace.org/admin">Logs</a>
     </nav>
 
     <div class="console-wrap">
+      <h1 class="sr-only">Logs</h1>
+
       <div class="console-filters">
         <button type="button" class="filter-btn active" data-filter="all">All</button>
         <button type="button" class="filter-btn" data-filter="low">[Low Priority]</button>
@@ -46,6 +233,7 @@
 
       <!-- Command box: sends commands to Roblox through the Cloudflare Worker -->
       <form id="cmdForm" class="console-cmd" autocomplete="off">
+        <label class="sr-only" for="cmdInput">Command</label>
         <input id="cmdInput" type="text" placeholder='&lt;studcons&gt; print("Testing")'>
         <p class="console-cmd-status" id="cmdStatus">Press Enter to send to Roblox Studio.</p>
       </form>
@@ -55,23 +243,9 @@
       <div class="console" id="console" aria-live="polite"></div>
     </div>
 
-    <script>
-      (function () {
-        var el = document.getElementById('particles');
-        var frag = document.createDocumentFragment();
-        for (var i = 0; i < 14; i++) {
-          var s = document.createElement('span');
-          var size = 1.5 + Math.random() * 2.5;
-          s.style.cssText =
-            'left:' + (Math.random() * 100) + '%;' +
-            'width:' + size + 'px;height:' + size + 'px;' +
-            'animation-duration:' + (10 + Math.random() * 14) + 's;' +
-            'animation-delay:' + (Math.random() * 12) + 's;';
-          frag.appendChild(s);
-        }
-        el.appendChild(frag);
-      })();
+    <div class="drift" aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0 100 V44 Q140 14 280 40 T560 34 T840 44 T1120 30 T1440 40 V100Z" fill="#c9d8ee"/><path d="M0 100 V62 Q120 36 240 58 T480 54 T720 62 T960 50 T1200 60 T1440 52 V100Z" fill="#f4f8ff"/></svg></div>
 
+    <script>
       var logs = [];
       // Example entries (remove or replace with Firestore data):
       // logs = [
@@ -179,6 +353,46 @@
             input.focus();
           });
         });
+      })();
+
+      // ---- snowfall ----
+      (function () {
+        var canvas = document.getElementById('snow');
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion || !canvas.getContext) return;
+        var ctx = canvas.getContext('2d');
+        var flakes = [], w = 0, h = 0, dpr = 1;
+
+        function resize() {
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          w = canvas.width = window.innerWidth * dpr;
+          h = canvas.height = window.innerHeight * dpr;
+        }
+        function makeFlake(anywhere) {
+          var r = (Math.random() * 2 + 0.6) * dpr;
+          return { x: Math.random() * w, y: anywhere ? Math.random() * h : -10, r: r,
+                   vy: (r / dpr * 0.3 + 0.3) * dpr, p: Math.random() * 6.28, a: Math.random() * 0.4 + 0.25 };
+        }
+        function seed() {
+          flakes = [];
+          for (var i = 0; i < 90; i++) flakes.push(makeFlake(true));
+        }
+        function frame() {
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = '#fff';
+          for (var i = 0; i < flakes.length; i++) {
+            var f = flakes[i];
+            f.p += 0.012; f.y += f.vy; f.x += Math.sin(f.p) * 0.4 * dpr;
+            if (f.y > h + 10) { flakes[i] = makeFlake(false); continue; }
+            ctx.globalAlpha = f.a;
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          requestAnimationFrame(frame);
+        }
+        resize(); seed(); frame();
+        window.addEventListener('resize', function () { resize(); seed(); });
       })();
     </script>
   </body>
